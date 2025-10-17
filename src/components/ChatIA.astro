@@ -1,0 +1,283 @@
+---
+import chatIcon from "../assets/icons/chat.svg";
+---
+
+<div class="pointer-events-none fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3">
+	<button
+		id="noahai-toggle"
+		type="button"
+		class="pointer-events-auto inline-flex items-center gap-2 rounded-full bg-[#ff7a00] px-5 py-3 text-sm font-semibold uppercase tracking-wide text-white shadow-[0_18px_30px_rgba(255,122,0,0.35)] transition hover:-translate-y-0.5 hover:bg-[#ff8c26] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#ff7a00]"
+		aria-haspopup="dialog"
+		aria-expanded="false"
+	>
+		<img src={chatIcon.src} alt="" class="h-4 w-4" aria-hidden="true" />
+		NoahAI
+	</button>
+
+	<div
+		id="noahai-chat-panel"
+		class="pointer-events-auto hidden w-[min(22rem,90vw)] max-w-sm rounded-2xl border border-white/10 bg-[#0f1317]/95 text-white shadow-[0_20px_40px_rgba(0,0,0,0.35)] backdrop-blur"
+		role="dialog"
+		aria-label="Assistant IA NoahAI"
+	>
+		<header class="flex items-center justify-between border-b border-white/10 px-5 py-4">
+			<div class="text-sm font-semibold tracking-wide uppercase text-[#ff7a00]">
+				Assistant IA
+			</div>
+			<div class="flex items-center gap-2">
+				<span class="text-xs text-slate-400">OpenAI + PocketBase</span>
+				<button
+					id="noahai-close"
+					type="button"
+					class="inline-flex h-7 w-7 items-center justify-center rounded-full border border-white/10 text-xs text-slate-300 transition hover:border-[#ff7a00] hover:text-[#ff7a00] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#ff7a00]"
+					aria-label="Fermer NoahAI"
+				>
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+		</header>
+
+		<div id="chat-messages" class="flex h-80 flex-col gap-3 overflow-y-auto px-5 py-4 text-sm">
+			<div class="rounded-2xl bg-white/5 px-4 py-3 text-slate-200">
+				Salut ! Pose-moi une question sur Noah, ses projets ou ses competences.
+			</div>
+		</div>
+
+		<form id="chat-form" class="flex items-center gap-2 border-t border-white/10 px-4 py-3">
+			<input
+				id="chat-input"
+				class="flex-1 rounded-lg border border-white/10 bg-[#141a1f] px-3 py-2 text-sm text-white placeholder:text-slate-500 focus:border-[#ff7a00] focus:outline-none focus:ring-2 focus:ring-[#ff7a00]/40"
+				placeholder="Pose ta question..."
+			/>
+			<button
+				type="submit"
+				class="inline-flex items-center gap-1 rounded-lg bg-[#ff7a00] px-4 py-2 text-xs font-semibold uppercase tracking-wide text-black transition hover:-translate-y-0.5 hover:bg-[#ff8c26] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#ff7a00]"
+			>
+				Envoyer
+			</button>
+		</form>
+	</div>
+</div>
+
+<script>
+	const API_CHUNKS = "/api/chunks";
+	const API_EMBEDDING = "/api/embedding";
+	const API_CHAT = "/api/chat";
+
+	const chatContainer = document.getElementById("chat-messages");
+	const form = document.getElementById("chat-form");
+	const input = document.getElementById("chat-input");
+	const toggleButton = document.getElementById("noahai-toggle");
+	const chatPanel = document.getElementById("noahai-chat-panel");
+	const closeButton = document.getElementById("noahai-close");
+
+	let knowledgeBase = [];
+	let isLoading = false;
+
+	const openChat = () => {
+		if (!chatPanel) return;
+		if (!chatPanel.classList.contains("hidden")) return;
+		chatPanel.classList.remove("hidden");
+		toggleButton?.setAttribute("aria-expanded", "true");
+		window.setTimeout(() => {
+			input?.focus();
+		}, 150);
+	};
+
+	const closeChat = () => {
+		if (!chatPanel) return;
+		if (chatPanel.classList.contains("hidden")) return;
+		chatPanel.classList.add("hidden");
+		toggleButton?.setAttribute("aria-expanded", "false");
+	};
+
+	toggleButton?.addEventListener("click", () => {
+		if (!chatPanel) return;
+		if (chatPanel.classList.contains("hidden")) {
+			openChat();
+		} else {
+			closeChat();
+		}
+	});
+
+	closeButton?.addEventListener("click", closeChat);
+
+	document.addEventListener("keydown", (event) => {
+		if (event.key === "Escape" && !chatPanel?.classList.contains("hidden")) {
+			closeChat();
+		}
+	});
+
+	const addMessage = (role, text) => {
+		if (!chatContainer) return;
+		const bubble = document.createElement("div");
+		bubble.className =
+			role === "user"
+				? "ml-auto max-w-[85%] rounded-2xl bg-[#ff7a00]/20 px-4 py-3 text-sm text-[#ffb26b]"
+				: "mr-auto max-w-[85%] rounded-2xl bg-white/5 px-4 py-3 text-sm text-slate-200";
+		bubble.textContent = text;
+		chatContainer.appendChild(bubble);
+		chatContainer.scrollTop = chatContainer.scrollHeight;
+	};
+
+	const setLoadingState = (state) => {
+		isLoading = state;
+		if (!chatContainer) return;
+		if (state) {
+			addMessage("ai", "...");
+		} else {
+			const last = chatContainer.lastElementChild;
+			if (last && last.textContent === "...") {
+				last.remove();
+			}
+		}
+	};
+
+	const cosineSimilarity = (a, b) => {
+		if (!Array.isArray(a) || !Array.isArray(b) || a.length !== b.length) {
+			return -Infinity;
+		}
+		let dot = 0;
+		let normA = 0;
+		let normB = 0;
+		for (let i = 0; i < a.length; i++) {
+			dot += a[i] * b[i];
+			normA += a[i] * a[i];
+			normB += b[i] * b[i];
+		}
+		if (!normA || !normB) {
+			return -Infinity;
+		}
+		return dot / (Math.sqrt(normA) * Math.sqrt(normB));
+	};
+
+	const fetchKnowledgeBase = async () => {
+		try {
+			const response = await fetch(API_CHUNKS);
+			if (!response.ok) {
+				throw new Error("Impossible de recuperer les donnees.");
+			}
+			const { items } = await response.json();
+			knowledgeBase = Array.isArray(items)
+				? items.map((item) => ({
+						...item,
+						embedding: Array.isArray(item.embedding)
+							? item.embedding
+							: Array.isArray(item.embedding?.values)
+							? item.embedding.values
+							: [],
+				  }))
+				: [];
+		} catch (error) {
+			console.error("[ChatIA] load knowledge base error:", error);
+			addMessage("ai", "Je n'arrive pas a charger les informations de reference pour le moment.");
+		}
+	};
+
+	const buildContext = async (question, topK = 5) => {
+		if (!knowledgeBase.length) {
+			await fetchKnowledgeBase();
+		}
+
+		const hasEmbeddings = knowledgeBase.some(
+			(chunk) => Array.isArray(chunk.embedding) && chunk.embedding.length > 0
+		);
+
+		if (!hasEmbeddings) {
+			const tokens = question
+				.toLowerCase()
+				.split(/\W+/)
+				.filter((token) => token.length > 2);
+
+			const scored = knowledgeBase
+				.map((chunk) => {
+					const text = (chunk.content ?? "").toLowerCase();
+					const matches = tokens.reduce(
+						(acc, token) => acc + (text.includes(token) ? 1 : 0),
+						0
+					);
+					return { ...chunk, score: matches };
+				})
+				.sort((a, b) => b.score - a.score)
+				.slice(0, topK);
+
+			return scored;
+		}
+
+		try {
+			const embeddingRes = await fetch(API_EMBEDDING, {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({ input: question }),
+			});
+
+			if (!embeddingRes.ok) {
+				throw new Error("Impossible de generer l'embedding.");
+			}
+
+			const { embedding } = await embeddingRes.json();
+			if (!Array.isArray(embedding)) {
+				throw new Error("Embedding invalide.");
+			}
+
+			const scored = knowledgeBase
+				.map((chunk) => ({
+					...chunk,
+					score: cosineSimilarity(embedding, chunk.embedding),
+				}))
+				.filter((chunk) => Number.isFinite(chunk.score))
+				.sort((a, b) => b.score - a.score)
+				.slice(0, topK);
+
+			return scored;
+		} catch (error) {
+			console.error("[ChatIA] build context error:", error);
+			return knowledgeBase.slice(0, topK);
+		}
+	};
+
+	form?.addEventListener("submit", async (event) => {
+		event.preventDefault();
+		if (isLoading) return;
+
+		const question = (input?.value ?? "").trim();
+		if (!question) return;
+
+		openChat();
+		addMessage("user", question);
+		if (input) {
+			input.value = "";
+		}
+
+		setLoadingState(true);
+		const contextChunks = await buildContext(question);
+
+		try {
+			const response = await fetch(API_CHAT, {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({ question, contextChunks }),
+			});
+
+			if (!response.ok) {
+				throw new Error("Reponse invalide de l'API chat.");
+			}
+
+			const { answer, error } = await response.json();
+			setLoadingState(false);
+
+			if (error) {
+				addMessage("ai", error);
+				return;
+			}
+
+			addMessage("ai", answer ?? "Je n'ai pas pu formuler de reponse.");
+		} catch (error) {
+			console.error("[ChatIA] chat error:", error);
+			setLoadingState(false);
+			addMessage("ai", "Desole, je n'ai pas reussi a repondre pour le moment. Reessaie plus tard.");
+		}
+	});
+
+	fetchKnowledgeBase();
+</script>

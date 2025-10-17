@@ -1,11 +1,123 @@
 ---
-import Welcome from '../components/Welcome.astro';
-import Layout from '../layouts/Layout.astro';
+import Hero from "../components/Hero.astro";
+import Layout from "../layouts/Layout.astro";
+import ProjetsPhares from "../components/ProjetsPhares.astro";
+import Carousel from "../components/Carousel.astro";
+import Competencedetaille from "../components/Competencedetaille.astro";
+import arrow from "../assets/icons/arrow.svg";
+import Apropos from "../components/APropos.astro";
+import Polyvalent from "../components/Polyvalent.astro";
+import Contact from "../components/Contact.astro";
+import Chat from "../components/ChatIA.astro";
 
 // Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
 // Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
 ---
 
 <Layout>
-	<Welcome />
+	<Hero />
+	<section class=" text-white py-20 px-6">
+		<div class="max-w-6xl">
+			<!-- Ligne + numéro -->
+			<div class="flex items-center gap-3 mb-4">
+				<span class="text-6xl font-bold text-white">02.</span>
+				<div class="flex-1 h-px bg-white/10"></div>
+			</div>
+
+			<!-- Titre principal -->
+			<h2 class="text-5xl md:text-6xl font-bold tracking-tight mb-3">
+				<span class="text-white">Projets</span>
+				<span class="text-[#ff7a00]"> phares</span>
+			</h2>
+
+			<!-- Sous-texte -->
+			<p class="text-xl text-slate-400 max-w-2xl">
+				Une sélection de mes réalisations les plus
+				<span class="text-[#ff7a00] font-medium"> marquantes</span>.
+			</p>
+		</div>
+	</section>
+	<ProjetsPhares />
+	<section class=" text-white py-10 px-6">
+		<div class="max-w-6xl">
+			<!-- Ligne + numéro -->
+			<div class="flex items-center gap-3 mb-4">
+				<span class="text-6xl font-bold text-white">03.</span>
+				<div class="flex-1 h-px bg-white/10"></div>
+			</div>
+
+			<!-- Titre principal -->
+			<h2 class="text-5xl md:text-6xl font-bold tracking-tight mb-3">
+				<span class="text-white">Stack &</span>
+				<span class="text-[#ff7a00]">Compétences</span>
+			</h2>
+
+			<!-- Sous-texte -->
+			<p class="text-xl text-slate-400 max-w-2xl">
+				Technologies et outils que je
+				<span class="text-[#ff7a00] font-medium"> maîtrise</span>
+			</p>
+		</div>
+	</section>
+	<Carousel />
+	<h2 class="text-4xl text-slate-400 max-w-2xl mx-auto text-center p-10">
+		Compétences techniques
+		<span class="text-[#ff7a00] font-medium ml-2">détaillées</span>
+	</h2>
+	<Competencedetaille />
+	<div class="flex justify-center p-6">
+		<a
+			href="/contact"
+			class="hero-btn-secondary inline-flex items-center justify-center rounded-md border border-[#ff7a00] px-10 py-5 text-xl font-semibold text-[#ff7a00] transition-colors duration-200 hover:bg-[#1a2128] hover:text-[#ff8c26] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#ff7a00]"
+		>
+			Voir mes projets
+		</a>
+	</div>
+	<section class=" text-white py-10 px-6">
+		<div class="max-w-6xl">
+			<!-- Ligne + numéro -->
+			<div class="flex items-center gap-3 mb-4">
+				<span class="text-6xl font-bold text-white">04.</span>
+				<div class="flex-1 h-px bg-white/10"></div>
+			</div>
+
+			<!-- Titre principal -->
+			<h2 class="text-5xl md:text-6xl font-bold tracking-tight mb-3">
+				<span class="text-white">À</span>
+				<span class="text-[#ff7a00]">Propos</span>
+			</h2>
+
+			<!-- Sous-texte -->
+			<p class="text-xl text-slate-400 max-w-2xl">
+				Chaque projet est une nouvelle
+				<span class="text-[#ff7a00] font-medium">
+					histoire à raconter</span
+				>
+			</p>
+		</div>
+	</section>
+	<Apropos />
+	<Polyvalent />
+	<section class="] text-white py-10 px-6">
+		<div class="max-w-6xl">
+			<!-- Ligne + numéro -->
+			<div class="flex items-center gap-3 mb-4">
+				<span class="text-6xl font-bold text-white">05.</span>
+				<div class="flex-1 h-px bg-white/10"></div>
+			</div>
+
+			<!-- Titre principal -->
+			<h2 class="text-5xl md:text-6xl font-bold tracking-tight mb-3">
+				<span class="text-white">Contact</span>
+			</h2>
+
+			<!-- Sous-texte -->
+			<p class="text-xl text-slate-400 max-w-2xl">
+				Ouvrons une balise de
+				<span class="text-[#ff7a00] font-medium"> dialogue</span>
+			</p>
+		</div>
+	</section>
+	<Contact />
+	<Chat />
 </Layout>

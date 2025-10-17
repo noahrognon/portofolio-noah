@@ -1,0 +1,109 @@
+---
+import { getPolyvalentSkills } from "../fonction/backend.js";
+import designIcon from "../assets/icons/design.svg";
+import commIcon from "../assets/icons/comm.svg";
+import audiovisuelIcon from "../assets/icons/audiovisuel.svg";
+import gestionIcon from "../assets/icons/gestion.svg";
+
+const normalizeTheme = (value = "") =>
+	value
+		.toString()
+		.trim()
+		.toLowerCase()
+		.normalize("NFD")
+		.replace(/[\u0300-\u036f]/g, "");
+
+const themeAliases = {
+	design: "design",
+	"design & creation": "design",
+	"design-creation": "design",
+	communication: "communication",
+	comm: "communication",
+	"communication-strategie": "communication",
+	audiovisuel: "audiovisuel",
+	"audiovisuel & multimedia": "audiovisuel",
+	gestion: "gestion",
+	"gestion-projet": "gestion",
+};
+
+const resolveTheme = (value) => themeAliases[normalizeTheme(value)] ?? normalizeTheme(value);
+
+const metaByTheme = {
+	design: {
+		title: "Design & création graphique",
+		icon: designIcon,
+	},
+	communication: {
+		title: "Communication & stratégie",
+		icon: commIcon,
+	},
+	audiovisuel: {
+		title: "Audiovisuel & multimédia",
+		icon: audiovisuelIcon,
+	},
+	gestion: {
+		title: "Gestion de projet & polyvalence MMI",
+		icon: gestionIcon,
+	},
+};
+
+const skills = await getPolyvalentSkills();
+
+const grouped = skills.reduce((acc, skill) => {
+	const key = resolveTheme(skill.theme);
+	if (!acc[key]) {
+		acc[key] = [];
+	}
+	acc[key].push(skill.competence);
+	return acc;
+}, {});
+
+const sections = Object.entries(metaByTheme).map(([key, meta]) => ({
+	...meta,
+	items: (grouped[key] ?? []).filter(Boolean),
+}));
+---
+
+<section class="mx-auto flex w-full max-w-6xl flex-col gap-12 px-4 py-10 sm:px-6 lg:px-0">
+	<header class="space-y-4 text-center">
+		<h2 class="text-3xl font-semibold text-white sm:text-[2rem]">
+			Un d&eacute;veloppeur...
+			<span class="text-[#ff7a00]"> mais polyvalent</span>
+		</h2>
+		<p class="mx-auto max-w-3xl text-sm leading-7 text-slate-300 sm:text-base sm:leading-8">
+			M&ecirc;me si je m'oriente aujourd'hui principalement vers le
+			<span class="font-medium text-white"> d&eacute;veloppement web</span> et les
+			<span class="font-medium text-white"> dispositifs interactifs</span>, mon parcours en
+			<span class="font-medium text-[#ff7a00]"> BUT MMI</span> m'a permis d'acqu&eacute;rir une v&eacute;ritable
+			<span class="font-medium text-[#ff7a00]"> polyvalence</span>. Cette transversalit&eacute; est pour moi un atout :
+			elle me permet de mieux collaborer avec des &eacute;quipes pluridisciplinaires et d'apporter une vraie
+			sensibilit&eacute; cr&eacute;ative au d&eacute;veloppement.
+		</p>
+	</header>
+
+	<div class="grid gap-6 md:grid-cols-2">
+		{sections.map((section) => (
+			<article class="group flex h-full flex-col gap-6 rounded-3xl border border-white/5 bg-[#0f1419]/90 px-6 py-7 shadow-[0_18px_45px_-28px_rgba(0,0,0,0.8)] ring-1 ring-black/20 transition-all duration-300 hover:border-[#ff7a00]/40 hover:shadow-[0_30px_60px_-32px_rgba(255,122,0,0.55)] md:px-7 md:py-8">
+				<header class="flex items-center gap-4">
+					<span class="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#151b22] ring-1 ring-inset ring-white/5 transition duration-300 group-hover:bg-[#1b232d] group-hover:ring-[#ff7a00]/50">
+						<img src={section.icon.src} alt="" class="h-7 w-7" aria-hidden="true" />
+					</span>
+					<h3 class="text-base font-semibold text-slate-100 sm:text-lg">{section.title}</h3>
+				</header>
+
+				{section.items.length > 0 ? (
+					<ul class="space-y-3 text-sm text-slate-300 sm:text-[15px] sm:leading-7">
+						{section.items.map((item) => (
+							<li class="flex items-start gap-3">
+								<span class="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[#ff7a00]" aria-hidden="true" />
+								<span class="text-white/80">{item}</span>
+							</li>
+						))}
+					</ul>
+				) : (
+					<p class="text-sm text-slate-500">Contenu &agrave; venir.</p>
+				)}
+			</article>
+		))}
+	</div>
+</section>

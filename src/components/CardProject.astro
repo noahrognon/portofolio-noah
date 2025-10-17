@@ -1,0 +1,123 @@
+---
+import tempsIcon from "../assets/icons/temps.svg";
+import equipeIcon from "../assets/icons/equipe.svg";
+import roleIcon from "../assets/icons/role.svg";
+import voirPlusIcon from "../assets/icons/voirplus.svg";
+import githubIcon from "../assets/icons/Github.svg";
+
+interface ProjectCardProps {
+	projet: {
+		id: string;
+		etiquette?: string;
+		titre?: string;
+		temps?: string;
+		equipe?: string;
+		role?: string;
+		statut?: string;
+		technologies?: string[];
+		liengithub?: string;
+		image?: string | null;
+	};
+}
+
+const { projet }: ProjectCardProps = Astro.props;
+
+const rawMetaItems = [
+	projet.temps ? { icon: tempsIcon.src, label: projet.temps, alt: "Duree du projet" } : null,
+	projet.equipe ? { icon: equipeIcon.src, label: projet.equipe, alt: "Type d'equipe" } : null,
+	projet.role ? { icon: roleIcon.src, label: projet.role, alt: "Role du projet" } : null,
+];
+
+const metaItems = rawMetaItems.filter(Boolean) as Array<{
+	icon: string;
+	label: string;
+	alt: string;
+}>;
+---
+
+<article class="group flex h-full flex-col overflow-hidden rounded-[2rem] border border-white/5 bg-[#10141c] shadow-[0_20px_45px_rgba(0,0,0,0.35)] transition-transform duration-300 hover:-translate-y-1 hover:shadow-[0_35px_60px_rgba(255,122,0,0.25)]">
+	<div class="flex items-start justify-between px-6 pt-6">
+		{projet.etiquette && (
+			<span class="inline-flex items-center rounded-full bg-[#ff7a00] px-3 py-1 text-xs font-semibold text-black shadow-[0_12px_24px_rgba(255,122,0,0.35)]">
+				{projet.etiquette}
+			</span>
+		)}
+	</div>
+
+	<div class="relative mt-6 flex flex-1 justify-center px-6">
+		<div class="relative w-full overflow-hidden rounded-3xl border border-white/5 bg-gradient-to-br from-[#131923] via-[#10141c] to-[#1f2940] p-4">
+			{projet.image ? (
+				<img
+					src={projet.image}
+					alt={projet.titre ? `Visuel du projet ${projet.titre}` : "Visuel du projet"}
+					class="h-48 w-full rounded-2xl object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+					loading="lazy"
+				/>
+			) : (
+				<div class="flex h-48 w-full items-center justify-center rounded-2xl bg-[#0b0f15] text-sm font-medium text-slate-500">
+					Aper&ccedil;u en pr&eacute;paration
+				</div>
+			)}
+
+			<div class="pointer-events-none absolute inset-x-6 bottom-6 h-20 rounded-3xl bg-gradient-to-t from-[#10141c]/90 via-transparent to-transparent"></div>
+		</div>
+	</div>
+
+	<div class="flex flex-col gap-5 px-6 pb-8 pt-6">
+		<h3 class="text-xl font-semibold text-white md:text-2xl">{projet.titre}</h3>
+
+		{projet.statut && (
+			<span class="inline-flex items-center gap-2 self-start rounded-full border border-[#ff7a00]/30 bg-[#ff7a00]/10 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-[#ffb366]">
+				<span class="h-1.5 w-1.5 rounded-full bg-[#ff7a00]"></span>
+				{projet.statut}
+			</span>
+		)}
+
+		{metaItems.length > 0 && (
+			<ul class="flex flex-wrap gap-3 text-xs font-medium text-slate-300">
+				{metaItems.map((item) => (
+					<li class="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1">
+						<img src={item.icon} alt={item.alt} class="h-3.5 w-3.5" aria-hidden="true" />
+						{item.label}
+					</li>
+				))}
+			</ul>
+		)}
+
+		{Array.isArray(projet.technologies) && projet.technologies.length > 0 && (
+			<ul class="flex flex-wrap gap-2">
+				{projet.technologies.map((tech) => (
+					<li class="rounded-full border border-[#ff7a00]/30 bg-[#ff7a00]/10 px-3 py-1 text-xs font-semibold text-[#ffb366]">
+						{tech}
+					</li>
+				))}
+			</ul>
+		)}
+
+		<div class="mt-2 flex flex-col gap-3 text-sm font-semibold uppercase text-[#ff7a00] sm:flex-row">
+			<a
+				href={`/projets/${projet.id}`}
+				class="flex flex-1 items-center justify-center gap-2 rounded-full border border-[#ff7a00] px-4 py-2 text-sm font-semibold uppercase tracking-wide text-[#ff7a00] transition hover:-translate-y-0.5 hover:bg-[#ff7a00] hover:text-black focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#ff7a00]"
+			>
+				<img src={voirPlusIcon.src} alt="" class="h-4 w-4" aria-hidden="true" />
+				Voir plus
+			</a>
+
+			{projet.liengithub ? (
+				<a
+					href={projet.liengithub}
+					class="flex flex-1 items-center justify-center gap-2 rounded-full bg-[#ff7a00] px-4 py-2 text-sm font-semibold uppercase tracking-wide text-black transition hover:-translate-y-0.5 hover:bg-[#ff8c26] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#ff7a00]"
+					target="_blank"
+					rel="noopener noreferrer"
+				>
+					<img src={githubIcon.src} alt="" class="h-4 w-4" aria-hidden="true" />
+					Code
+				</a>
+			) : (
+				<span class="flex flex-1 items-center justify-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold uppercase tracking-wide text-slate-500">
+					Code indisponible
+				</span>
+			)}
+		</div>
+	</div>
+</article>

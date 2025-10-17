@@ -1,0 +1,229 @@
+---
+import arrowIcon from "../assets/icons/arrow.svg";
+import contactIcon from "../assets/icons/contact.svg";
+---
+
+<section
+	class="relative hero-section  text-white overflow-hidden"
+>
+	<!-- Fond décoratif en arrière-plan -->
+	<div
+		class="absolute inset-0 z-0 flex  opacity-10 select-none"
+		aria-hidden="true"
+	>
+		<pre
+			class="text-[1rem] md:text-[1.15rem] leading-relaxed font-mono text-[#ff7a00]/90 whitespace-pre-wrap text-left px-6 max-w-7xl">
+function initPortfolio() &#123;
+  const developer = &#123;
+    name: "Noah Rognon",
+    title: "Développeur Web & Créatif",
+    skills: ["JavaScript", "React", "Node.js", "Design"],
+    passion: "Creating digital experiences"
+  &#125;;
+
+  return developer.initialize();
+&#125;
+
+class Portfolio &#123;
+  constructor() &#123;
+    this.projects = [];
+    this.skills = new Set();
+    this.isCreative = true;
+  &#125;
+
+  async loadProjects() &#123;
+    // Loading amazing projects...
+    return this.projects.filter(p => p.featured);
+  &#125;
+&#125;
+
+const noah = new Portfolio();
+noah.loadProjects().then(projects => &#123;
+  console.log("Welcome to my portfolio!");
+&#125;);
+    </pre>
+	</div>
+
+	<!-- Lien cliquable par-dessus le fond -->
+	
+
+	<!-- Contenu principal -->
+	<div
+		class="relative z-10 mx-auto flex min-h-[calc(100vh-104px)] max-w-7xl flex-col items-center justify-center gap-12 px-6 py-32 text-center"
+	>
+		<div class="space-y-6">
+			<h1
+				class="hero-title text-4xl font-semibold leading-tight md:text-8xl"
+			>
+				<span
+					id="hero-typewriter"
+					class="typewriter-text font-semibold tracking-tight"></span>
+				<span class="hero-caret" data-hero-caret aria-hidden="true"
+				></span>
+			</h1>
+			<p
+				class="hero-description mx-auto max-w-3xl text-2xl text-slate-300 md:text-3xl"
+			>
+				Je conçois des expériences web
+				<span class="text-[#43ff97]"> rapides</span>,
+				<span class="text-[#4fa3ff]"> lisibles</span>
+				et
+				<span class="text-[#ff7a00]"> mémorables</span>.
+			</p>
+		</div>
+
+		<div class="flex flex-wrap justify-center gap-8">
+			<a
+				href="/projets"
+				class="hero-btn-primary inline-flex items-center gap-3 rounded-md bg-[#ff7a00] px-10 py-5 text-xl font-semibold text-black transition-transform duration-200 hover:-translate-y-0.5 hover:bg-[#ff8c26] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#ff7a00]"
+			>
+				Voir mes projets
+				<img
+					src={arrowIcon.src}
+					alt=""
+					class="h-6 w-6"
+					aria-hidden="true"
+				/>
+			</a>
+			<a
+				href="/contact"
+				class="hero-btn-secondary inline-flex items-center gap-3 rounded-md border border-[#ff7a00] px-10 py-5 text-xl font-semibold text-[#ff7a00] transition-colors duration-200 hover:bg-[#1a2128] hover:text-[#ff8c26] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#ff7a00]"
+			>
+				<img
+					src={contactIcon.src}
+					alt=""
+					class="h-6 w-6"
+					aria-hidden="true"
+				/>
+				Me contacter
+			</a>
+		</div>
+	</div>
+</section>
+
+<style>
+	.hero-title {
+		position: relative;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 0.25rem;
+	}
+	.typewriter-text {
+		display: inline-block;
+		white-space: nowrap;
+	}
+	.hero-caret {
+		display: inline-block;
+		width: 3px;
+		height: 1em;
+		background-color: #ff7a00;
+		animation: hero-caret-blink 1s steps(2, end) infinite;
+	}
+	.hero-caret.caret-static {
+		animation: none;
+		opacity: 1;
+	}
+	@keyframes hero-caret-blink {
+		0%,
+		50% {
+			opacity: 1;
+		}
+		50.0001%,
+		100% {
+			opacity: 0;
+		}
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.hero-caret {
+			animation: none;
+		}
+	}
+</style>
+
+<script is:inline>
+	/* Ton JS d’origine, inchangé */
+	const words = [
+		"Noah ROGNON",
+		"Développeur Web Full Stack",
+		"Créateur d'expériences web",
+		"Ouvrons une balise de conversation",
+		"Buveur de café",
+		"Noah ROGNON",
+	];
+
+	const typingSpeed = 90;
+	const pauseBetween = 800;
+
+	function typeText(el, text, callback) {
+		let i = 0;
+		const type = () => {
+			if (i < text.length) {
+				el.innerHTML += text[i];
+				i++;
+				setTimeout(type, typingSpeed);
+			} else {
+				if (callback) callback();
+			}
+		};
+		type();
+	}
+
+	function deleteText(el, callback) {
+		let i = el.textContent.length;
+		const del = () => {
+			if (i > 0) {
+				el.textContent = el.textContent.substring(0, i - 1);
+				i--;
+				setTimeout(del, 40);
+			} else {
+				if (callback) callback();
+			}
+		};
+		del();
+	}
+
+	function runTypewriter() {
+		const target = document.getElementById("hero-typewriter");
+		const caret = document.querySelector("[data-hero-caret]");
+		if (!target) return;
+
+		const prefersReducedMotion =
+			window.matchMedia &&
+			window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+		if (prefersReducedMotion) {
+			target.textContent = words[words.length - 1];
+			caret?.classList.add("caret-static");
+			return;
+		}
+
+		let index = 0;
+
+		const loop = () => {
+			const word = words[index];
+			typeText(target, word, () => {
+				setTimeout(() => {
+					if (index < words.length - 1) {
+						deleteText(target, () => {
+							index++;
+							setTimeout(loop, pauseBetween);
+						});
+					} else {
+						caret?.classList.add("caret-static");
+					}
+				}, pauseBetween);
+			});
+		};
+
+		loop();
+	}
+
+	if (document.readyState === "loading") {
+		document.addEventListener("DOMContentLoaded", runTypewriter, {
+			once: true,
+		});
+	} else {
+		runTypewriter();
+	}
+</script>

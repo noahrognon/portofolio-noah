@@ -1,0 +1,353 @@
+---
+import downloadIcon from "../assets/icons/Download.svg";
+import lightIcon from "../assets/icons/clair.svg";
+import darkIcon from "../assets/icons/sombre.svg";
+import menuIcon from "../assets/icons/menu-mobile.svg";
+import cvFile from "../assets/files/Curriculum_vitae_de_Noah_ROGNON_otcotbre_2025.pdf";
+
+const links = [
+	{ href: "/", label: "Accueil" },
+	{ href: "/projets", label: "Projets" },
+	{ href: "/contact", label: "Contact" },
+	{ href: "/a-propos", label: "&Agrave; propos" },
+];
+
+const normalize = (value: string) => (value === "/" ? "/" : value.replace(/\/+$/, ""));
+const currentPath = normalize(Astro.url.pathname);
+const isActive = (href: string) => {
+	const normalizedHref = normalize(href);
+	if (normalizedHref === "/") {
+		return currentPath === "/";
+	}
+	return currentPath.startsWith(normalizedHref);
+};
+---
+
+<header class="site-header border-b border-[#171f26] bg-[#0c1014] text-white">
+	<div class="relative mx-auto flex max-w-6xl items-center justify-between gap-4 px-6 py-5">
+		<button
+			type="button"
+			class="mobile-menu-toggle flex h-11 w-11 items-center justify-center rounded-md border border-[#1f2933] bg-[#11171d] transition-transform duration-300 hover:border-[#ff7a00] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#ff7a00] md:hidden"
+			data-menu-toggle
+			aria-expanded="false"
+			aria-controls="mobile-menu"
+		>
+			<span class="sr-only">Ouvrir le menu de navigation</span>
+			<img
+				src={menuIcon.src}
+				alt=""
+				class="h-6 w-6 transition-transform duration-300"
+				aria-hidden="true"
+			/>
+		</button>
+
+		<nav id="primary-navigation" class="hidden flex-1 md:block">
+			<ul class="flex justify-center overflow-hidden rounded-md bg-[#11171d]">
+				{links.map((link, index) => {
+					const active = isActive(link.href);
+					return (
+						<li class="relative">
+							<a
+								href={link.href}
+								class={`flex min-w-[120px] items-center justify-center px-8 py-4 text-sm font-medium transition-colors ${
+									active
+										? "border-b-2 border-[#ff7a00] text-white"
+										: "border-b-2 border-transparent text-slate-300 hover:text-white"
+								}`}
+								data-active={active ? "true" : "false"}
+								set:html={link.label}
+							/>
+							{index < links.length - 1 && (
+								<span class="pointer-events-none absolute top-1/2 right-0 hidden h-6 w-px -translate-y-1/2 bg-[#1c252d] md:block" />
+							)}
+						</li>
+					);
+				})}
+			</ul>
+		</nav>
+
+		<div class="hidden items-center gap-3 md:flex">
+			<a
+				href={cvFile}
+				download
+				class="download-btn flex items-center gap-2 rounded-md border border-[#ff7a00] px-4 py-2 text-sm font-medium text-[#ff7a00] transition-colors hover:bg-[#ff7a00] hover:text-black focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#ff7a00]"
+			>
+				<img src={downloadIcon.src} alt="" class="h-4 w-4" aria-hidden="true" />
+				T&eacute;l&eacute;charger CV
+			</a>
+
+			<button
+				type="button"
+				class="theme-toggle flex h-11 w-11 items-center justify-center rounded-md border border-[#1f2933] bg-[#11171d] transition-colors hover:border-[#ff7a00] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#ff7a00]"
+				data-theme-toggle
+				aria-label="Activer le theme clair"
+			>
+				<img
+					src={lightIcon.src}
+					alt=""
+					class="h-5 w-5"
+					data-theme-icon="light"
+					aria-hidden="true"
+				/>
+				<img
+					src={darkIcon.src}
+					alt=""
+					class="hidden h-5 w-5"
+					data-theme-icon="dark"
+					aria-hidden="true"
+				/>
+			</button>
+		</div>
+
+		<div
+			class="mobile-menu pointer-events-none absolute inset-x-6 top-full z-30 origin-top -translate-y-4 scale-y-95 rounded-lg border border-[#171f26] bg-[#0c1014] opacity-0 shadow-[0_20px_40px_rgba(0,0,0,0.35)] transition-all duration-300 md:hidden"
+			data-mobile-menu
+			id="mobile-menu"
+		>
+			<nav aria-label="Navigation principale mobile">
+				<ul class="flex flex-col divide-y divide-[#171f26]">
+					{links.map((link) => {
+						const active = isActive(link.href);
+						return (
+							<li>
+								<a
+									href={link.href}
+									class={`block px-6 py-4 text-base font-medium transition-colors ${
+										active
+											? "text-white"
+											: "text-slate-300 hover:text-white"
+									}`}
+									data-active={active ? "true" : "false"}
+									set:html={link.label}
+								/>
+							</li>
+						);
+					})}
+				</ul>
+			</nav>
+
+			<div class="flex flex-col gap-3 px-6 py-5">
+				<a
+					href={cvFile}
+					download
+					class="download-btn flex items-center justify-center gap-2 rounded-md border border-[#ff7a00] px-4 py-3 text-sm font-medium text-[#ff7a00] transition-colors hover:bg-[#ff7a00] hover:text-black focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#ff7a00]"
+				>
+					<img src={downloadIcon.src} alt="" class="h-4 w-4" aria-hidden="true" />
+					T&eacute;l&eacute;charger CV
+				</a>
+
+				<button
+					type="button"
+					class="theme-toggle flex h-11 w-full items-center justify-center gap-2 rounded-md border border-[#1f2933] bg-[#11171d] text-sm font-medium transition-colors hover:border-[#ff7a00] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#ff7a00]"
+					data-theme-toggle
+					aria-label="Activer le theme clair"
+				>
+					<img
+						src={lightIcon.src}
+						alt=""
+						class="h-5 w-5"
+						data-theme-icon="light"
+						aria-hidden="true"
+					/>
+					<span>Changer de th&egrave;me</span>
+					<img
+						src={darkIcon.src}
+						alt=""
+						class="hidden h-5 w-5"
+						data-theme-icon="dark"
+						aria-hidden="true"
+					/>
+				</button>
+			</div>
+		</div>
+	</div>
+</header>
+
+<style is:global>
+	:root {
+		--page-bg: #05080b;
+		--page-text: #e2e8f0;
+	}
+
+	:root[data-theme="light"] {
+		--page-bg: #f8fafc;
+		--page-text: #0f172a;
+	}
+
+	body {
+		background-color: var(--page-bg);
+		color: var(--page-text);
+		transition: background-color 0.2s ease, color 0.2s ease;
+	}
+
+	body.has-mobile-menu-open {
+		overflow: hidden;
+	}
+
+	.site-header nav ul {
+		background-color: #11171d;
+	}
+
+	.mobile-menu[data-open="true"] {
+		pointer-events: auto;
+		opacity: 1;
+		transform: translateY(0) scaleY(1);
+	}
+
+	.mobile-menu-toggle[data-open="true"] img {
+		transform: rotate(180deg);
+	}
+
+	:root[data-theme="light"] .site-header {
+		background-color: #f8fafc;
+		border-bottom-color: #d0d9e3;
+		color: #0f172a;
+	}
+
+	:root[data-theme="light"] .site-header nav ul {
+		background-color: #ffffff;
+	}
+
+	:root[data-theme="light"] .site-header a[data-active="false"] {
+		color: #475569;
+	}
+
+	:root[data-theme="light"] .site-header a[data-active="false"]:hover {
+		color: #0f172a;
+	}
+
+	:root[data-theme="light"] .site-header a[data-active="true"] {
+		color: #0f172a;
+	}
+
+	:root[data-theme="light"] .site-header .download-btn {
+		color: #ff7a00;
+		background-color: #ffffff;
+	}
+
+	:root[data-theme="light"] .site-header .theme-toggle {
+		border-color: #d0d9e3;
+		background-color: #ffffff;
+	}
+
+	:root[data-theme="light"] .site-header span {
+		background-color: #e2e8f0;
+	}
+
+	:root[data-theme="light"] .mobile-menu {
+		border-color: #d0d9e3;
+		background-color: #ffffff;
+		box-shadow: 0 20px 40px rgba(15, 23, 42, 0.12);
+	}
+
+	:root[data-theme="light"] .mobile-menu nav a[data-active="false"] {
+		color: #475569;
+	}
+
+	:root[data-theme="light"] .mobile-menu nav a[data-active="false"]:hover {
+		color: #0f172a;
+	}
+</style>
+
+<script is:inline>
+	const storageKey = "theme-choice";
+	const root = document.documentElement;
+	const themeToggles = Array.from(document.querySelectorAll("[data-theme-toggle]"));
+	const iconRegistry = themeToggles.map((toggle) => ({
+		toggle,
+		light: toggle.querySelector('[data-theme-icon="light"]'),
+		dark: toggle.querySelector('[data-theme-icon="dark"]'),
+	}));
+
+	const syncToggleVisuals = (isDark) => {
+		iconRegistry.forEach(({ toggle, light, dark }) => {
+			light?.classList.toggle("hidden", isDark);
+			dark?.classList.toggle("hidden", !isDark);
+			toggle.setAttribute(
+				"aria-label",
+				isDark ? "Activer le theme clair" : "Activer le theme sombre"
+			);
+		});
+	};
+
+	const applyTheme = (theme) => {
+		const nextTheme = theme === "light" ? "light" : "dark";
+		const isDark = nextTheme === "dark";
+		root.dataset.theme = nextTheme;
+		syncToggleVisuals(isDark);
+	};
+
+	const storedChoice = window.localStorage.getItem(storageKey);
+	const prefersDark =
+		window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+	applyTheme(storedChoice || (prefersDark ? "dark" : "light"));
+
+	themeToggles.forEach((toggle) => {
+		toggle.addEventListener("click", () => {
+			const currentTheme = root.dataset.theme === "light" ? "light" : "dark";
+			const newTheme = currentTheme === "light" ? "dark" : "light";
+			applyTheme(newTheme);
+			window.localStorage.setItem(storageKey, newTheme);
+		});
+	});
+
+	const menuToggle = document.querySelector("[data-menu-toggle]");
+	const mobileMenu = document.querySelector("[data-mobile-menu]");
+	let isMenuOpen = false;
+
+	const setMenuState = (open) => {
+		isMenuOpen = open;
+		const state = open ? "true" : "false";
+
+		menuToggle?.setAttribute("aria-expanded", state);
+		menuToggle?.setAttribute("data-open", state);
+		mobileMenu?.setAttribute("data-open", state);
+		mobileMenu?.setAttribute("aria-hidden", open ? "false" : "true");
+
+		document.body.classList.toggle("has-mobile-menu-open", open);
+	};
+
+	if (menuToggle && mobileMenu) {
+		setMenuState(false);
+	}
+
+	menuToggle?.addEventListener("click", () => {
+		setMenuState(!isMenuOpen);
+	});
+
+	const handleOutsideClick = (event) => {
+		if (!isMenuOpen) {
+			return;
+		}
+		const target = event.target;
+		if (!(target instanceof Node)) {
+			return;
+		}
+		if (
+			mobileMenu &&
+			!mobileMenu.contains(target) &&
+			menuToggle &&
+			!menuToggle.contains(target)
+		) {
+			setMenuState(false);
+		}
+	};
+
+	document.addEventListener("click", handleOutsideClick);
+
+	document.addEventListener("keydown", (event) => {
+		if (event.key === "Escape" && isMenuOpen) {
+			setMenuState(false);
+		}
+	});
+
+	mobileMenu
+		?.querySelectorAll("a, button")
+		.forEach((element) => element.addEventListener("click", () => setMenuState(false)));
+
+	window.addEventListener("resize", () => {
+		if (window.innerWidth >= 768 && isMenuOpen) {
+			setMenuState(false);
+		}
+	});
+</script>

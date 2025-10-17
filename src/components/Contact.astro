@@ -1,0 +1,275 @@
+---
+import mailIcon from "../assets/icons/mail.svg";
+import phoneIcon from "../assets/icons/telephone.svg";
+import mapIcon from "../assets/icons/maps.svg";
+import githubIcon from "../assets/icons/Github.svg";
+import linkedinIcon from "../assets/icons/Linkedin.svg";
+---
+
+<section
+	class="mx-auto flex w-full max-w-6xl flex-col gap-8 px-4 py-20 sm:px-6 lg:px-0"
+>
+	<div class="grid gap-6 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
+		<div
+			class="rounded-3xl border border-white/5 bg-[#0f1419]/90 px-6 py-7 shadow-[0_20px_50px_-30px_rgba(0,0,0,0.8)] ring-1 ring-black/20 sm:px-8 sm:py-9"
+		>
+			<h3 class="text-lg font-semibold text-slate-100 sm:text-xl">
+				Envoyez-moi un message
+			</h3>
+			<form
+				data-contact-form
+				class="mt-6 space-y-5"
+				aria-describedby="contact-feedback"
+			>
+				<div class="space-y-2">
+					<label
+						for="contact-name"
+						class="block text-sm font-medium text-slate-200"
+					>
+						Nom
+					</label>
+					<input
+						id="contact-name"
+						name="name"
+						type="text"
+						required
+						placeholder="Votre nom complet"
+						class="w-full rounded-xl border border-white/5 bg-[#141b22] px-4 py-3 text-sm text-white placeholder:text-slate-500 transition focus:border-[#ff7a00] focus:outline-none focus:ring-2 focus:ring-[#ff7a00]/50"
+					/>
+				</div>
+
+				<div class="space-y-2">
+					<label
+						for="contact-email"
+						class="block text-sm font-medium text-slate-200"
+					>
+						Email
+					</label>
+					<input
+						id="contact-email"
+						name="email"
+						type="email"
+						required
+						placeholder="votre.email@exemple.com"
+						class="w-full rounded-xl border border-white/5 bg-[#141b22] px-4 py-3 text-sm text-white placeholder:text-slate-500 transition focus:border-[#ff7a00] focus:outline-none focus:ring-2 focus:ring-[#ff7a00]/50"
+					/>
+				</div>
+
+				<div class="space-y-2">
+					<label
+						for="contact-message"
+						class="block text-sm font-medium text-slate-200"
+					>
+						Message
+					</label>
+					<textarea
+						id="contact-message"
+						name="message"
+						required
+						rows={6}
+						placeholder="Decrivez votre projet ou votre message..."
+						class="w-full resize-none rounded-xl border border-white/5 bg-[#141b22] px-4 py-3 text-sm text-white placeholder:text-slate-500 transition focus:border-[#ff7a00] focus:outline-none focus:ring-2 focus:ring-[#ff7a00]/50"
+					></textarea>
+				</div>
+
+				<button
+					type="submit"
+					class="flex w-full items-center justify-center gap-2 rounded-xl bg-[#ff7a00] px-5 py-3 text-sm font-semibold text-black shadow-[0_12px_32px_-18px_rgba(255,122,0,0.9)] transition hover:-translate-y-0.5 hover:bg-[#ff9633] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#ff7a00]"
+				>
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="1.5"
+						class="h-4 w-4"
+					>
+						<path
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							d="m5 12 14-7-3 14-3.5-5.5L5 12Z"></path>
+					</svg>
+					Envoyer le message
+				</button>
+
+				<p
+					id="contact-feedback"
+					data-feedback
+					class="hidden rounded-xl border px-4 py-3 text-sm font-medium"
+					role="status"
+				>
+				</p>
+			</form>
+		</div>
+
+		<div class="space-y-6">
+			<div
+				class="rounded-3xl border border-white/5 bg-[#0f1419]/90 px-6 py-7 shadow-[0_18px_45px_-30px_rgba(0,0,0,0.8)] ring-1 ring-black/20 sm:px-7 sm:py-8"
+			>
+				<h3 class="text-lg font-semibold text-slate-100 sm:text-xl">
+					Informations de contact
+				</h3>
+				<ul class="mt-5 space-y-4 text-sm text-slate-200">
+					<li
+						class="flex items-center gap-3 rounded-2xl bg-[#141b22] px-4 py-3"
+					>
+						<img
+							src={mailIcon.src}
+							alt=""
+							class="h-5 w-5 shrink-0"
+							aria-hidden="true"
+						/>
+						<a
+							href="mailto:noah.rognon@gmail.com"
+							class="transition hover:text-[#ff7a00]"
+						>
+							noah.rognon@gmail.com
+						</a>
+					</li>
+					<li
+						class="flex items-center gap-3 rounded-2xl bg-[#141b22] px-4 py-3"
+					>
+						<img
+							src={phoneIcon.src}
+							alt=""
+							class="h-5 w-5 shrink-0"
+							aria-hidden="true"
+						/>
+						<a
+							href="tel:+33766219666"
+							class="transition hover:text-[#ff7a00]"
+						>
+							+33 7 66 21 96 66
+						</a>
+					</li>
+					<li
+						class="flex items-center gap-3 rounded-2xl bg-[#141b22] px-4 py-3"
+					>
+						<img
+							src={mapIcon.src}
+							alt=""
+							class="h-5 w-5 shrink-0"
+							aria-hidden="true"
+						/>
+						<span>Morteau, France</span>
+					</li>
+				</ul>
+			</div>
+
+			<div
+				class="rounded-3xl border border-white/5 bg-[#0f1419]/90 px-6 py-7 shadow-[0_18px_45px_-30px_rgba(0,0,0,0.8)] ring-1 ring-black/20 sm:px-7 sm:py-8"
+			>
+				<h3 class="text-lg font-semibold text-slate-100 sm:text-xl">
+					Reseaux sociaux
+				</h3>
+				<div class="mt-4 flex items-center gap-4">
+					<a
+						href="https://github.com/noahrognon"
+						target="_blank"
+						rel="noreferrer"
+						class="flex h-10 w-10 items-center justify-center rounded-full border border-[#ff7a00]/40 bg-[#141b22] text-[#ff7a00] transition hover:-translate-y-0.5 hover:border-[#ff7a00] hover:bg-[#ff7a00]/15"
+						aria-label="GitHub"
+					>
+						<img
+							src={githubIcon.src}
+							alt=""
+							class="h-5 w-5"
+							aria-hidden="true"
+						/>
+					</a>
+					<a
+						href="https://www.linkedin.com/in/noah-rognon-54056a299/"
+						target="_blank"
+						rel="noreferrer"
+						class="flex h-10 w-10 items-center justify-center rounded-full border border-[#ff7a00]/40 bg-[#141b22] text-[#ff7a00] transition hover:-translate-y-0.5 hover:border-[#ff7a00] hover:bg-[#ff7a00]/15"
+						aria-label="LinkedIn"
+					>
+						<img
+							src={linkedinIcon.src}
+							alt=""
+							class="h-5 w-5"
+							aria-hidden="true"
+						/>
+					</a>
+				</div>
+				<p class="mt-4 text-sm text-slate-400">
+					Suivez-moi pour decouvrir mes derniers projets et
+					creations&nbsp;!
+				</p>
+			</div>
+		</div>
+	</div>
+</section>
+
+<script is:inline>
+	const form = document.querySelector("[data-contact-form]");
+	const feedback = document.querySelector("[data-feedback]");
+	const endpoint = "http://127.0.0.1:8090/api/collections/messages/records";
+
+	const showFeedback = (message, type = "success") => {
+		if (!feedback) return;
+		feedback.textContent = message;
+		feedback.classList.remove("hidden");
+		feedback.classList.remove(
+			"border-green-400/40",
+			"text-green-300",
+			"border-red-400/40",
+			"text-red-300",
+		);
+		if (type === "success") {
+			feedback.classList.add("border-green-400/40", "text-green-300");
+		} else {
+			feedback.classList.add("border-red-400/40", "text-red-300");
+		}
+	};
+
+	form?.addEventListener("submit", async (event) => {
+		event.preventDefault();
+		if (!(event.target instanceof HTMLFormElement)) {
+			return;
+		}
+
+		const submitButton = event.target.querySelector(
+			'button[type="submit"]',
+		);
+		const formData = new FormData(event.target);
+		const payload = {
+			name: formData.get("name"),
+			email: formData.get("email"),
+			message: formData.get("message"),
+		};
+
+		try {
+			submitButton?.setAttribute("disabled", "true");
+			submitButton?.classList.add("opacity-70", "cursor-not-allowed");
+
+			const response = await fetch(endpoint, {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify(payload),
+			});
+
+			if (!response.ok) {
+				const text = await response.text();
+				console.error("PocketBase error:", response.status, text);
+				throw new Error(
+					`Request failed with status ${response.status}`,
+				);
+			}
+
+			showFeedback("Votre message a bien ete envoye, merci !", "success");
+			event.target.reset();
+		} catch (error) {
+			console.error("Contact form error:", error);
+			showFeedback(
+				"Une erreur est survenue, veuillez reessayer plus tard.",
+				"error",
+			);
+		} finally {
+			submitButton?.removeAttribute("disabled");
+			submitButton?.classList.remove("opacity-70", "cursor-not-allowed");
+		}
+	});
+</script>

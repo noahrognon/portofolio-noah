@@ -1,0 +1,53 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Contactt from "../components/Contact.astro";
+import Chat from "../components/ChatIA.astro";
+---
+
+<Layout>
+    <section class="relative overflow-hidden py-24 text-white md:py-32">
+        <div class="absolute inset-0">
+            <div
+                class="absolute left-6 top-10 hidden text-xs font-mono leading-relaxed text-[#ff7a00]/10 sm:block"
+            >
+                &lt;contact&gt;
+                <br />
+                // cont&eacute;act
+                <br />
+                const portfolio = {"{"}
+            </div>
+            <span
+                class="absolute left-1/4 top-[30%] hidden h-1 w-1 rounded-full bg-[#ff7a00]/60 sm:block"
+            ></span>
+            <span
+                class="absolute right-[22%] top-[40%] hidden h-1 w-1 rounded-full bg-[#ff7a00]/40 sm:block"
+            ></span>
+            <span
+                class="absolute bottom-16 right-10 hidden h-1 w-1 rounded-full bg-[#ff7a00]/50 sm:block"
+            ></span>
+        </div>
+
+        <div
+            class="relative mx-auto flex max-w-4xl flex-col items-center px-6 text-center"
+        >
+            <h1
+                class="text-4xl font-semibold leading-tight text-white sm:text-5xl"
+            >
+                Contact
+            </h1>
+            <p class="mt-4 text-base text-slate-300 sm:text-lg">
+                Ajoutez-moi à vos contacts comme une
+                <span class="text-[#ff7a00]">nouvelle ligne de code</span>
+            </p>
+            <div
+                class="mt-8 flex items-center justify-center gap-3 text-[#ff7a00]"
+            >
+                <span class="h-px w-12 bg-current"></span>
+                <span class="h-1 w-1 rounded-full bg-current"></span>
+                <span class="h-px w-12 bg-current"></span>
+            </div>
+        </div>
+    </section>
+    <Contactt />
+    <Chat />
+</Layout>

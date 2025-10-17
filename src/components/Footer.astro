@@ -1,0 +1,27 @@
+---
+import heartIcon from "../assets/icons/heart.svg";
+
+const currentYear = new Date().getFullYear();
+---
+
+<footer class="border-t border-white/5 bg-[#0b0f13]/95">
+	<div class="mx-auto flex w-full max-w-5xl flex-col items-center gap-3 px-4 py-10 text-center text-sm text-slate-400 sm:text-[15px]">
+		<p class="flex flex-wrap items-center justify-center gap-2 text-slate-200">
+			<span>Cr&eacute;&eacute; avec</span>
+			<span class="flex items-center gap-2 text-[#ff7a00]">
+				<img src={heartIcon.src} alt="" class="h-4 w-4 sm:h-5 sm:w-5" aria-hidden="true" />
+				<span aria-hidden="true">et</span>
+				<span aria-hidden="true">{`</>`}</span>
+			</span>
+			<span>par Noah Rognon</span>
+		</p>
+
+		<p class="text-xs text-slate-500 sm:text-sm">
+			&copy; {currentYear} Noah Rognon. Tous droits r&eacute;serv&eacute;s.
+		</p>
+
+		<code class="rounded-lg border border-[#111920] bg-[#10161d] px-4 py-2 text-xs font-mono text-[#ff7a00] sm:text-sm">
+			console.log(<span class="text-emerald-400">'Merci de votre visite !'</span>);
+		</code>
+	</div>
+</footer>
