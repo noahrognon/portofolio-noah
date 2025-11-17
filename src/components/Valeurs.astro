@@ -1,0 +1,91 @@
+---
+import { getValeurs } from "../fonction/backend.js";
+import iconCuriosite from "../assets/icons/curiosite.svg";
+import iconPerfectionniste from "../assets/icons/perfectionniste.svg";
+import iconTravailEquipe from "../assets/icons/travailequipe.svg";
+
+const fetchedValeurs = await getValeurs();
+
+const fallbackValeurs = [
+	{
+		id: "valeur-curiosite",
+		title: "Curiosit&eacute;",
+		description:
+			"Toujours en qu&ecirc;te d'apprentissage, j'explore les nouvelles technologies et tendances pour enrichir mes comp&eacute;tences.",
+		icon: iconCuriosite.src,
+	},
+	{
+		id: "valeur-perfectionniste",
+		title: "Perfectionniste",
+		description:
+			"Je porte une attention particuli&egrave;re aux d&eacute;tails et &agrave; la qualit&eacute; du code pour livrer des projets soign&eacute;s et performants.",
+		icon: iconPerfectionniste.src,
+	},
+	{
+		id: "valeur-travail-equipe",
+		title: "Travail en &eacute;quipe",
+		description:
+			"La collaboration et l'&eacute;change d'id&eacute;es sont essentiels pour mener &agrave; bien des projets ambitieux et enrichissants.",
+		icon: iconTravailEquipe.src,
+	},
+];
+
+const valeurs = (fetchedValeurs.length ? fetchedValeurs : fallbackValeurs).map(
+	(value, index) => {
+		const fallbackLetter =
+			value.title?.trim()?.charAt(0)?.toUpperCase() ??
+			String.fromCharCode(65 + (index % 26));
+		return {
+			...value,
+			fallbackLetter,
+		};
+	}
+);
+---
+
+<section class="relative isolate overflow-hidden px-6 py-24 text-white sm:px-10 lg:px-16">
+	<div
+		class="pointer-events-none absolute inset-x-0 top-0 h-40  from-[#ff7a00]/10 to-transparent"
+		aria-hidden="true"
+	></div>
+
+	<div class="relative z-10 mx-auto max-w-5xl text-center">
+		<h2 class="text-4xl font-semibold md:text-5xl">Valeurs</h2>
+		<div class="mx-auto mt-4 h-1 w-28 rounded-full bg-gradient-to-r from-transparent via-[#ff7a00] to-transparent"></div>
+		<p class="mx-auto mt-6 max-w-3xl text-base leading-relaxed text-slate-300">
+			Ce qui guide ma mani&egrave;re de travailler : une curiosit&eacute; constante, le souci du d&eacute;tail et un esprit d'&eacute;quipe fort pour cr&eacute;er des exp&eacute;riences num&eacute;riques remarquables.
+		</p>
+
+		<div class="mt-16 grid gap-10 md:grid-cols-3">
+			{valeurs.map((value) => (
+				<div
+					class="group relative flex flex-col items-center rounded-[30px] border border-white/5 bg-gradient-to-b from-[#161616] to-[#0b0b0b] p-8 text-center shadow-[0_25px_55px_rgba(0,0,0,0.45)] transition duration-300 hover:-translate-y-1 hover:border-[#ff7a00]/40 hover:shadow-[0_30px_60px_rgba(255,122,0,0.18)]"
+				>
+					<div class="mb-6 flex items-center justify-center">
+						<div class="relative h-24 w-24 rounded-full bg-gradient-to-br from-[#ff7a00] to-[#ff5100] p-[3px]">
+							<div class="flex h-full w-full items-center justify-center rounded-full bg-[#0b0b0b]">
+								{value.icon ? (
+									<img
+										src={value.icon}
+										alt={value.title}
+										loading="lazy"
+										class="h-12 w-12 object-contain"
+									/>
+								) : (
+									<span class="text-2xl font-semibold text-[#ff7a00]">
+										{value.fallbackLetter}
+									</span>
+								)}
+							</div>
+						</div>
+					</div>
+					<h3 class="text-2xl font-semibold text-white">{value.title}</h3>
+					<p class="mt-4 text-sm leading-relaxed text-slate-300">
+						{value.description}
+					</p>
+					<div class="mt-8 h-px w-12 origin-center scale-x-0 bg-[#ff7a00]/50 transition group-hover:scale-x-100"></div>
+				</div>
+			))}
+		</div>
+	</div>
+</section>

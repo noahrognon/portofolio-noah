@@ -1,0 +1,125 @@
+---
+import { getParcours } from "../fonction/backend.js";
+
+const fetchedParcours = await getParcours();
+
+const fallbackParcours = [
+	{
+		id: "fallback-1",
+		title: "Baccalaur&eacute;at G&eacute;n&eacute;ral",
+		year: "2024",
+		description:
+			"Obtention du baccalaur&eacute;at mention assez bien avec sp&eacute;cialit&eacute;s Math&eacute;matiques, Physique-Chimie et Num&eacute;rique et Sciences Informatiques (NSI).",
+		icon: null,
+	},
+	{
+		id: "fallback-2",
+		title: "BUT MMI Montb&eacute;liard",
+		year: "2024 - 2027",
+		description:
+			"Formation en M&eacute;tiers du Multim&eacute;dia et de l'Internet avec sp&eacute;cialisation en d&eacute;veloppement web et dispositifs interactifs.",
+		icon: null,
+	},
+	{
+		id: "fallback-3",
+		title: "Avenir professionnel",
+		year: "A suivre...",
+		description:
+			"Ouvert aux opportunit&eacute;s de stage, alternance et premiers emplois dans le d&eacute;veloppement web full stack.",
+		icon: null,
+	},
+];
+
+const timeline = (fetchedParcours.length ? fetchedParcours : fallbackParcours).map(
+	(item, index) => ({
+		...item,
+		fallbackLetter: String.fromCharCode(65 + (index % 26)),
+		alignLeft: index % 2 === 0,
+	})
+);
+---
+
+<section
+	class="relative isolate overflow-hidden  px-6 py-24 text-white sm:px-10 lg:px-16"
+>
+	<div
+		class="pointer-events-none absolute left-0 top-10 h-64 w-64 rounded-full bg-[#ff7a00]/10 blur-[140px]"
+		aria-hidden="true"
+	></div>
+	<div
+		class="pointer-events-none absolute right-0 top-1/2 h-72 w-72 -translate-y-1/2 rounded-full bg-[#ff7a00]/5 blur-[160px]"
+		aria-hidden="true"
+	></div>
+
+	<div class="relative z-10 mx-auto max-w-5xl text-center">
+		<p class="text-sm font-semibold uppercase tracking-[0.35em] text-[#ff7a00]">
+			Parcours
+		</p>
+		<h2 class="mt-3 text-4xl font-bold md:text-5xl">Mon parcours</h2>
+		<div class="mx-auto mt-4 h-1 w-24 rounded-full bg-gradient-to-r from-transparent via-[#ff7a00] to-transparent"></div>
+
+		<div class="relative mt-16">
+			<ul class="space-y-16 md:space-y-20">
+				{timeline.map((step) => (
+					<li
+						class={`relative flex flex-col items-center gap-6 md:gap-10 ${
+							step.alignLeft ? "md:flex-row" : "md:flex-row-reverse"
+						}`}
+					>
+						<div class="hidden flex-col items-center gap-4 md:flex md:gap-6">
+							{step.icon ? (
+								<img
+									src={step.icon}
+									alt=""
+									class="h-20 w-20 object-contain drop-shadow-[0_0_35px_rgba(255,122,0,0.4)]"
+									loading="lazy"
+								/>
+							) : (
+								<span
+									aria-hidden="true"
+									class="text-2xl font-semibold text-[#ff7a00]"
+								>
+									{step.fallbackLetter}
+								</span>
+							)}
+							<div
+								class={`hidden h-0.5 w-24 rounded-full md:block ${
+									step.alignLeft
+										? "bg-gradient-to-r from-[#ff7a00]/60 to-transparent"
+										: "bg-gradient-to-l from-[#ff7a00]/60 to-transparent"
+								}`}
+							></div>
+						</div>
+
+						<div
+							class="w-full rounded-3xl border border-white/5 bg-gradient-to-br from-[#151515]/80 via-[#0d0d0d]/70 to-[#050505]/90 p-6 text-left shadow-[0_25px_60px_rgba(0,0,0,0.55)] backdrop-blur-sm transition duration-300 hover:-translate-y-1 hover:border-[#ff7a00]/40 hover:shadow-[0_25px_65px_rgba(255,122,0,0.2)] md:max-w-xl"
+						>
+							<div class="flex flex-wrap items-start justify-between gap-3">
+								<h3 class="text-2xl font-semibold text-white">{step.title}</h3>
+								<span class="rounded-full bg-[#ff7a00]/15 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-[#ff7a00]">
+									{step.year}
+								</span>
+							</div>
+							<p class="mt-4 text-base leading-relaxed text-slate-300">
+								{step.description}
+							</p>
+						</div>
+
+						<div class="flex items-center justify-center text-lg font-semibold text-[#ff7a00] md:hidden">
+							{step.icon ? (
+								<img
+									src={step.icon}
+									alt=""
+									class="h-16 w-16 object-contain drop-shadow-[0_0_25px_rgba(255,122,0,0.25)]"
+									loading="lazy"
+								/>
+							) : (
+								<span aria-hidden="true">{step.fallbackLetter}</span>
+							)}
+						</div>
+					</li>
+				))}
+			</ul>
+		</div>
+	</div>
+</section>

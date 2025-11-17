@@ -1,6 +1,10 @@
 ---
 import portrait from "../assets/img/noah.webp";
-import cvFile from "../assets/files/Curriculum_vitae_de_Noah_ROGNON_otcotbre_2025.pdf";
+import cvFileLocal from "../assets/files/Curriculum_vitae_de_Noah_ROGNON_otcotbre_2025.pdf";
+import { getCvFile } from "../fonction/backend.js";
+
+const cvRecord = await getCvFile();
+const cvFile = cvRecord?.url ?? cvFileLocal;
 
 const intro =
 	"Je m'appelle Noah Rognon, étudiant en deuxième année de BUT Métiers du Multimédia et de l'Internet (MMI) à Montbéliard.";

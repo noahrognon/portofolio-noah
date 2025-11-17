@@ -204,7 +204,8 @@ import linkedinIcon from "../assets/icons/Linkedin.svg";
 <script is:inline>
 	const form = document.querySelector("[data-contact-form]");
 	const feedback = document.querySelector("[data-feedback]");
-	const endpoint = "http://127.0.0.1:8090/api/collections/messages/records";
+	const endpoint =
+		"https://portfolio.noahrognon.fr/api/collections/messages/records";
 
 	const showFeedback = (message, type = "success") => {
 		if (!feedback) return;

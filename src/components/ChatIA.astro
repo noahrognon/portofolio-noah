@@ -22,10 +22,10 @@ import chatIcon from "../assets/icons/chat.svg";
 	>
 		<header class="flex items-center justify-between border-b border-white/10 px-5 py-4">
 			<div class="text-sm font-semibold tracking-wide uppercase text-[#ff7a00]">
-				Assistant IA
+				NoahAI
 			</div>
 			<div class="flex items-center gap-2">
-				<span class="text-xs text-slate-400">OpenAI + PocketBase</span>
+				<span class="text-xs text-slate-400"></span>
 				<button
 					id="noahai-close"
 					type="button"
@@ -39,7 +39,7 @@ import chatIcon from "../assets/icons/chat.svg";
 
 		<div id="chat-messages" class="flex h-80 flex-col gap-3 overflow-y-auto px-5 py-4 text-sm">
 			<div class="rounded-2xl bg-white/5 px-4 py-3 text-slate-200">
-				Salut ! Pose-moi une question sur Noah, ses projets ou ses competences.
+				Salut ! Pose-moi une question sur Noah je saurai te répondre.
 			</div>
 		</div>
 
@@ -60,9 +60,9 @@ import chatIcon from "../assets/icons/chat.svg";
 </div>
 
 <script>
-	const API_CHUNKS = "/api/chunks";
-	const API_EMBEDDING = "/api/embedding";
-	const API_CHAT = "/api/chat";
+	const API_CHUNKS = "/besoin/chunks";
+	const API_EMBEDDING = "/besoin/embedding";
+	const API_CHAT = "/besoin/chat";
 
 	const chatContainer = document.getElementById("chat-messages");
 	const form = document.getElementById("chat-form");

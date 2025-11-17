@@ -1,0 +1,83 @@
+---
+import noahImg from "../assets/img/noah.webp";
+---
+
+<section
+	class="relative isolate overflow-hidden px-6 py-20 text-white sm:px-10 md:py-32"
+>
+	<div
+		class="pointer-events-none absolute inset-0 opacity-70"
+		aria-hidden="true"
+	>
+		<div
+			class="absolute left-1/4 top-12 h-1 w-1 rounded-full bg-[#ff7a00]"
+		></div>
+		<div
+			class="absolute bottom-10 left-1/2 h-1 w-1 rounded-full bg-[#ff7a00]"
+		></div>
+		<div
+			class="absolute right-20 top-1/3 h-1 w-1 rounded-full bg-[#ff7a00]"
+		></div>
+		<div
+			class="absolute -left-12 top-1/2 h-48 w-48 rounded-full bg-[#ff7a00]/10 blur-3xl"
+		></div>
+		<div
+			class="absolute right-0 top-0 h-64 w-64 rounded-full bg-[#ff7a00]/5 blur-[120px]"
+		></div>
+	</div>
+
+	<div
+		class="relative z-10 mx-auto flex max-w-6xl flex-col items-center justify-center gap-10 text-center md:flex-row md:items-center md:text-left"
+	>
+		<div class="relative mx-auto w-48 shrink-0 sm:w-56 md:mx-0 md:w-64 lg:w-72">
+			<div
+				class="absolute inset-0 -z-10 rounded-full bg-[#ff7a00]/30 blur-3xl"
+				aria-hidden="true"
+			></div>
+			<div
+				class="rounded-full border border-[#ff7a00]/40 bg-gradient-to-b from-[#0f0f0f] to-[#1f1f1f] p-2 shadow-[0_0_35px_rgba(255,122,0,0.4)]"
+			>
+				<img
+					src={noahImg.src}
+					width={noahImg.width}
+					height={noahImg.height}
+					alt="Portrait de Noah Rognon"
+					loading="lazy"
+					class="aspect-square w-full rounded-full border-4 border-[#ff7a00]/40 object-cover shadow-[0_0_45px_rgba(255,122,0,0.45)]"
+				/>
+			</div>
+		</div>
+
+		<div class="w-full max-w-2xl space-y-8 text-center md:w-auto md:max-w-xl md:text-left">
+			<div class="space-y-3">
+				<h1 class="text-4xl font-bold leading-tight text-white md:text-5xl">
+					&Agrave; propos de moi
+				</h1>
+				<p class="text-2xl font-semibold text-[#ff7a00]">
+					D&eacute;veloppeur web et &eacute;tudiant en BUT MMI
+				</p>
+			</div>
+
+			<div class="space-y-4 text-base leading-relaxed text-slate-200 md:text-lg">
+				<p>
+					Je m&apos;appelle Noah Rognon, &eacute;tudiant en 2e ann&eacute;e de BUT MMI &agrave; Montb&eacute;liard,
+					sp&eacute;cialis&eacute; en d&eacute;veloppement web et dispositifs interactifs (DWeb).
+				</p>
+				<p>
+					Je con&ccedil;ois des sites et applications web complets, du front-end au back-end,
+					avec une attention particuli&egrave;re port&eacute;e &agrave; l&apos;exp&eacute;rience utilisateur et &agrave; la qualit&eacute; du code.
+				</p>
+				<p>
+					Polyvalent gr&acirc;ce &agrave; mon parcours m&ecirc;lant programmation, design et communication, je vise &agrave; devenir
+					d&eacute;veloppeur web full stack, capable de cr&eacute;er des solutions modernes, performantes et accessibles.
+				</p>
+			</div>
+
+			<div class="flex items-center gap-2 text-[#ff7a00]">
+				<span class="inline-flex h-1 w-12 rounded-full bg-current"></span>
+				<span class="inline-flex h-1 w-1 rounded-full bg-current"></span>
+				<span class="inline-flex h-1 w-12 rounded-full bg-current"></span>
+			</div>
+		</div>
+	</div>
+</section>

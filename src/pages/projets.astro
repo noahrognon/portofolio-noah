@@ -2,12 +2,15 @@
 import Layout from "../layouts/Layout.astro";
 import Chat from "../components/ChatIA.astro";
 import CardProject from "../components/CardProject.astro";
-import { getProjects } from "../fonction/backend.js";
+import { getProjects, getCvFile } from "../fonction/backend.js";
 import chatIcon from "../assets/icons/chat.svg";
 import downloadIcon from "../assets/icons/Download.svg";
-import cvFile from "../assets/files/Curriculum_vitae_de_Noah_ROGNON_otcotbre_2025.pdf";
-const projects = await getProjects();
+import cvFileLocal from "../assets/files/Curriculum_vitae_de_Noah_ROGNON_otcotbre_2025.pdf";
 import Contact from "../components/Contact.astro";
+
+const projects = await getProjects();
+const cvRecord = await getCvFile();
+const cvFile = cvRecord?.url ?? cvFileLocal;
 ---
 
 <Layout>
@@ -58,30 +61,14 @@ import Contact from "../components/Contact.astro";
 	</section>
 
 	<section class=" py-20 text-white">
-		<div class="mx-auto flex max-w-6xl flex-col gap-16 px-6">
+		<div class="mx-auto flex max-w-[1400px] flex-col gap-16 px-6 sm:px-8 lg:px-10">
 			<div class="flex flex-col items-center text-center">
-				<h2
-					class="text-3xl font-semibold text-white sm:text-4xl md:text-5xl"
-				>
-					R&eacute;alisations
-				</h2>
-				<div
-					class="mt-5 flex items-center justify-center gap-3 text-[#ff7a00]"
-				>
-					<span class="h-px w-12 bg-current"></span>
-					<span class="h-1 w-1 rounded-full bg-current"></span>
-					<span class="h-px w-12 bg-current"></span>
-				</div>
-				<p class="mt-4 max-w-2xl text-sm text-slate-300 sm:text-base">
-					Une vitrine de mes projets, extraits de ma base de
-					donn&eacute;es PocketBase pour mettre en avant mes
-					r&eacute;alisations les plus significatives.
-				</p>
+				
 			</div>
 
 			{
 				projects.length > 0 ? (
-					<div class="grid gap-10 md:grid-cols-2 xl:grid-cols-3">
+					<div class="grid gap-9 md:grid-cols-2 lg:grid-cols-3">
 						{projects.map((projet) => (
 							<CardProject projet={projet} />
 						))}

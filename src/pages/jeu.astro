@@ -1,0 +1,1198 @@
+---
+import Layout from "../layouts/Layout.astro";
+import { getCarouselItems } from "../fonction/backend.js";
+
+const carouselItems = await getCarouselItems().catch(() => []);
+const techIconSources = carouselItems
+	.map((item) => item.icon)
+	.filter((src) => typeof src === "string" && src.length > 0);
+const iconsPayload = JSON.stringify(techIconSources ?? []).replace(/</g, "\\u003c");
+---
+<!--
+README Snake :
+- Les icônes proviennent de la collection Carousel PocketBase (fallback : FALLBACK_ICON) ; vitesse et grille se règlent via DEFAULT_GRID, DEFAULT_SPEED et CELL dans le script.
+- Les sons sont coupés par défaut : activez-les avec le bouton « Sons » ou via le panneau Paramètres (toggle synchronisé).
+- Commandes : flèches ou WASD (AZERTY : ZQSD), Espace/P pour pause, R pour restart, bouton Paramètres pour ajuster le jeu, D-Pad et swipe (>30px) sur mobile. Entrez le Konami Code pour activer le mode wrap.
+-->
+
+<Layout>
+	<main
+		class="min-h-screen px-6 py-16 text-[color:var(--color-fg,#f8fafc)] md:py-24"
+	>
+		<header class="mx-auto max-w-2xl text-center">
+			<p
+				class="text-xs font-semibold uppercase tracking-[0.4em] text-[color:var(--color-accent,#f97316)]"
+			>
+				Easter Egg
+			</p>
+			<h1 class="mt-4 text-4xl font-bold md:text-5xl">Snake</h1>
+			<p class="mt-4 text-base text-neutral-300 dark:text-neutral-300">
+				Un mini-jeu rétro-modern entièrement brandé pour le portfolio, pensé
+				pour le clavier comme pour le tactile.
+			</p>
+		</header>
+
+		<section class="mx-auto mt-12 max-w-xl">
+			<div
+				class="flex flex-col gap-6 rounded-3xl border border-white/10 bg-[color:var(--color-bg,#0f172a)]/80 p-6 shadow-[0_40px_120px_-60px_rgba(15,23,42,0.8)] backdrop-blur-xl"
+			>
+				<div
+					class="flex flex-wrap items-center justify-between gap-4 text-[0.75rem] uppercase tracking-[0.18em] text-neutral-400"
+				>
+					<div class="flex items-center gap-2">
+						<span>Score</span>
+						<span
+							id="score"
+							class="text-lg font-semibold text-[color:var(--color-accent,#f97316)]"
+						>
+							0
+						</span>
+					</div>
+					<div class="flex items-center gap-2">
+						<span>High Score</span>
+						<span
+							id="high-score"
+							class="text-lg font-semibold text-[color:var(--color-primary,#34d399)]"
+						>
+							0
+						</span>
+					</div>
+					<div class="flex items-center gap-2">
+						<span>Mode</span>
+						<span
+							id="mode-indicator"
+							class="text-lg font-semibold text-[color:var(--color-accent,#f97316)]"
+						>
+							Mur
+						</span>
+					</div>
+					<div class="flex items-center gap-2">
+						<span>État</span>
+						<span
+							id="status-label"
+							class="text-lg font-semibold text-[color:var(--color-primary,#34d399)]"
+						>
+							En jeu
+						</span>
+	</div>
+</div><div
+					class="relative aspect-square w-full overflow-hidden rounded-2xl border border-white/10 bg-neutral-950/85"
+				>
+					<canvas
+						id="snake-canvas"
+						class="h-full w-full select-none rounded-2xl"
+						aria-label="Mini-jeu Snake sur grille"
+					></canvas>
+					<div
+						class="pointer-events-none absolute inset-0 rounded-2xl border border-white/10"
+					></div>
+				</div>
+
+				<p class="text-sm font-medium text-neutral-300">
+					Dirige le serpent, avale le logo et progresse sans te mordre ni
+					frapper les murs. La vitesse grimpe doucement à chaque bouchée.
+				</p>
+
+				<div
+					class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between"
+				>
+					<div
+						class="mx-auto grid w-full max-w-[12rem] grid-cols-3 grid-rows-3 gap-2 text-neutral-100 md:mx-0"
+						aria-hidden="false"
+					>
+						<span></span>
+						<button
+							type="button"
+							data-direction="up"
+							class="rounded-xl border border-white/10 bg-white/5 py-3 text-sm font-semibold text-[color:var(--color-fg,#f8fafc)] transition-colors duration-150 hover:bg-[color:var(--color-accent,#f97316)]/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--color-accent,#f97316)]"
+							aria-label="Aller vers le haut"
+						>
+							↑
+						</button>
+						<span></span>
+						<button
+							type="button"
+							data-direction="left"
+							class="rounded-xl border border-white/10 bg-white/5 py-3 text-sm font-semibold text-[color:var(--color-fg,#f8fafc)] transition-colors duration-150 hover:bg-[color:var(--color-accent,#f97316)]/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--color-accent,#f97316)]"
+							aria-label="Aller vers la gauche"
+						>
+							←
+						</button>
+						<span></span>
+						<button
+							type="button"
+							data-direction="right"
+							class="rounded-xl border border-white/10 bg-white/5 py-3 text-sm font-semibold text-[color:var(--color-fg,#f8fafc)] transition-colors duration-150 hover:bg-[color:var(--color-accent,#f97316)]/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--color-accent,#f97316)]"
+							aria-label="Aller vers la droite"
+						>
+							→
+						</button>
+						<span></span>
+						<button
+							type="button"
+							data-direction="down"
+							class="rounded-xl border border-white/10 bg-white/5 py-3 text-sm font-semibold text-[color:var(--color-fg,#f8fafc)] transition-colors duration-150 hover:bg-[color:var(--color-accent,#f97316)]/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--color-accent,#f97316)]"
+							aria-label="Aller vers le bas"
+						>
+							↓
+						</button>
+					</div>
+
+					<div
+						class="flex flex-wrap items-center justify-center gap-3 md:justify-end"
+					>
+						<button
+							id="pause-btn"
+							type="button"
+							class="rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-[color:var(--color-fg,#f8fafc)] transition-colors duration-150 hover:bg-[color:var(--color-accent,#f97316)]/15 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--color-accent,#f97316)]"
+							aria-pressed="false"
+						>
+							Pause
+						</button>
+						<button
+							id="restart-btn"
+							type="button"
+							class="rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-[color:var(--color-fg,#f8fafc)] transition-colors duration-150 hover:bg-[color:var(--color-accent,#f97316)]/15 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--color-accent,#f97316)]"
+						>
+							Restart
+						</button>
+						<button
+							id="settings-btn"
+							type="button"
+							class="rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-[color:var(--color-fg,#f8fafc)] transition-colors duration-150 hover:bg-[color:var(--color-accent,#f97316)]/15 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--color-accent,#f97316)]"
+							aria-haspopup="dialog"
+							aria-expanded="false"
+						>
+							Paramètres
+						</button>
+						<button
+							id="sound-toggle"
+							type="button"
+							class="rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-[color:var(--color-fg,#f8fafc)] transition-colors duration-150 hover:bg-[color:var(--color-accent,#f97316)]/15 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--color-accent,#f97316)]"
+							aria-pressed="false"
+						>
+							Sons OFF
+						</button>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<section
+			class="mx-auto mt-12 max-w-2xl space-y-4 rounded-3xl border border-white/5 bg-[color:var(--color-bg,#0f172a)]/50 p-6 text-sm text-neutral-300"
+		>
+			<p class="font-semibold text-[color:var(--color-accent,#f97316)]">
+				Mode d’emploi
+			</p>
+			<p>
+				<strong>Clavier :</strong> flèches ou WASD (AZERTY : ZQSD) pour se
+				diriger, Espace ou P pour mettre en pause, R pour relancer, Entrée sur
+				« Paramètres » pour régler la partie.
+			</p>
+			<p>
+				<strong>Tactile :</strong> utilisez le D-Pad ou un swipe (30 px
+				minimum). Le jeu gère les demi-tours bloqués pour éviter les collisions
+				accidentelles.
+			</p>
+			<p>
+				<strong>Accessibilité :</strong> focus visible, pause respectée par
+				défaut, sons coupés tant que vous ne les activez pas. Le canvas suit
+				les préférences de contraste et réduit les animations si nécessaire.
+			</p>
+			<p>
+				<strong>Bonus :</strong> saisissez le Konami Code (↑↑↓↓←→←→BA) pour
+				activer le mode wrap instantanément.
+			</p>
+		</section>
+	</main>
+
+	<div
+		id="settings-overlay"
+		class="fixed inset-0 z-50 hidden place-items-center bg-black/70 p-6 text-[color:var(--color-fg,#f8fafc)]"
+	>
+		<div
+			class="w-full max-w-md rounded-3xl border border-white/10 bg-[color:var(--color-bg,#0f172a)]/95 p-6 shadow-[0_60px_160px_-80px_rgba(8,15,35,0.95)]"
+			role="dialog"
+			aria-modal="true"
+			aria-labelledby="settings-title"
+		>
+			<div class="flex items-start justify-between">
+				<div>
+					<h2 id="settings-title" class="text-lg font-semibold">
+						Paramètres du jeu
+					</h2>
+					<p class="mt-1 text-sm text-neutral-400">
+						Ajustez la difficulté, la grille ou le comportement des murs.
+					</p>
+				</div>
+				<button
+					id="settings-close"
+					type="button"
+					class="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-[color:var(--color-fg,#f8fafc)] transition-colors duration-150 hover:bg-[color:var(--color-accent,#f97316)]/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--color-accent,#f97316)]"
+				>
+					Esc
+				</button>
+			</div>
+
+			<form id="settings-form" class="mt-6 space-y-6">
+				<div class="space-y-2">
+					<label
+						for="grid-size"
+						class="text-sm font-medium text-[color:var(--color-fg,#f8fafc)]"
+					>
+						Taille de grille
+					</label>
+					<select
+						id="grid-size"
+						name="gridSize"
+						class="w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-[color:var(--color-fg,#f8fafc)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--color-accent,#f97316)]"
+					>
+						<option value="10">10 x 10</option>
+						<option value="15">15 x 15</option>
+						<option value="20">20 x 20</option>
+						<option value="25">25 x 25</option>
+					</select>
+				</div>
+
+				<div class="space-y-2">
+					<label
+						for="speed-initial"
+						class="text-sm font-medium text-[color:var(--color-fg,#f8fafc)]"
+					>
+						Vitesse initiale
+					</label>
+					<select
+						id="speed-initial"
+						name="speedInitial"
+						class="w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-[color:var(--color-fg,#f8fafc)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--color-accent,#f97316)]"
+					>
+						<option value="slow">Lente (~6 FPS)</option>
+						<option value="medium">Medium (~8 FPS)</option>
+						<option value="fast">Rapide (~11 FPS)</option>
+					</select>
+				</div>
+
+				<div class="space-y-2">
+					<label
+						for="wrap-mode"
+						class="text-sm font-medium text-[color:var(--color-fg,#f8fafc)]"
+					>
+						Bordures
+					</label>
+					<select
+						id="wrap-mode"
+						name="wrapMode"
+						class="w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-[color:var(--color-fg,#f8fafc)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--color-accent,#f97316)]"
+					>
+						<option value="wall">Mur (par défaut)</option>
+						<option value="wrap">Wrap (traverser les bords)</option>
+					</select>
+				</div>
+
+				<label
+					class="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-medium text-[color:var(--color-fg,#f8fafc)]"
+				>
+					<input
+						id="sound-checkbox"
+						name="soundEnabled"
+						type="checkbox"
+						class="h-4 w-4 rounded border-white/20 bg-transparent text-[color:var(--color-accent,#f97316)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--color-accent,#f97316)]"
+					/>
+					Sons ON/OFF (préférence mémorisée)
+				</label>
+
+				<div class="flex items-center justify-end gap-3 pt-2">
+					<button
+						id="settings-cancel"
+						type="button"
+						class="rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-[color:var(--color-fg,#f8fafc)] transition-colors duration-150 hover:bg-[color:var(--color-accent,#f97316)]/15 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--color-accent,#f97316)]"
+					>
+						Annuler
+					</button>
+					<button
+						type="submit"
+						class="rounded-xl border border-[color:var(--color-accent,#f97316)]/40 bg-[color:var(--color-accent,#f97316)]/20 px-4 py-2 text-sm font-semibold text-[color:var(--color-fg,#f8fafc)] transition-colors duration-150 hover:bg-[color:var(--color-accent,#f97316)]/30 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--color-accent,#f97316)]"
+					>
+						Appliquer
+					</button>
+				</div>
+			</form>
+		</div>
+</div>
+
+<script
+	type="application/json"
+	id="snake-icon-sources"
+	set:html={iconsPayload}
+></script>
+
+<script type="module">
+const FALLBACK_ICON = "/logo-portfolio.svg";
+const DEFAULT_GRID = 20;
+const DEFAULT_SPEED = 8; // ticks par seconde
+const CELL = 24; // taille logique en px
+
+const SPEED_MAP = {
+  slow: 6,
+  medium: DEFAULT_SPEED,
+  fast: 11
+};
+
+const HIGH_SCORE_KEY = "snake_highscore_v1";
+const iconScript = document.getElementById("snake-icon-sources");
+/** @type {string[]} */
+const ICON_SOURCES = (() => {
+  if (!iconScript) return [];
+  try {
+    return JSON.parse(iconScript.textContent || "[]");
+  } catch (error) {
+    if (typeof console !== "undefined" && console.error) {
+      console.error("Snake icon payload parse error:", error);
+    }
+    return [];
+  } finally {
+    iconScript.remove();
+  }
+})();
+if (typeof console !== "undefined" && console.info) {
+  if (ICON_SOURCES.length) {
+    console.info("Snake icons loaded:", ICON_SOURCES);
+  } else {
+    console.info("Snake icons indisponibles: utilisation du logo fallback.");
+  }
+}
+const KONAMI_SEQUENCE = [
+  "ArrowUp",
+  "ArrowUp",
+  "ArrowDown",
+  "ArrowDown",
+  "ArrowLeft",
+  "ArrowRight",
+  "ArrowLeft",
+  "ArrowRight",
+  "b",
+  "a"
+];
+
+/**
+ * Normalize une couleur CSS en triplet RGB.
+ * @param {string} value
+ * @returns {[number, number, number]}
+ */
+function parseColor(value) {
+  const trimmed = value.trim();
+  if (/^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test(trimmed)) {
+    const hex = trimmed.slice(1);
+    const normalized = hex.length === 3 ? hex.split("").map((c) => c + c).join("") : hex;
+    return [
+      parseInt(normalized.slice(0, 2), 16),
+      parseInt(normalized.slice(2, 4), 16),
+      parseInt(normalized.slice(4, 6), 16)
+    ];
+  }
+  const rgbMatch = trimmed.match(/rgba?\(([^)]+)\)/i);
+  if (rgbMatch) {
+    const parts = rgbMatch[1]
+      .split(",")
+      .map((part) => parseFloat(part.trim()))
+      .filter((n) => Number.isFinite(n));
+    return [parts[0] ?? 15, parts[1] ?? 23, parts[2] ?? 42];
+  }
+  return [15, 23, 42];
+}
+
+/**
+ * Éclaircit une couleur via interpolation vers le blanc.
+ * @param {[number,number,number]} color
+ * @param {number} amount
+ */
+function lightenColor(color, amount) {
+  return color.map((channel) => Math.min(255, Math.round(channel + (255 - channel) * amount)));
+}
+
+const toCssColor = ([r, g, b]) => `rgb(${r}, ${g}, ${b})`;
+
+/**
+ * Génère un bip PCM encapsulé dans un objet Audio.
+ * @param {number} frequency
+ * @param {number} [decay]
+ */
+function createTone(frequency, decay = 3) {
+  const sampleRate = 8000;
+  const duration = 0.18;
+  const frameCount = Math.floor(sampleRate * duration);
+  const wavSize = 44 + frameCount * 2;
+  const buffer = new ArrayBuffer(wavSize);
+  const view = new DataView(buffer);
+  const writeString = (offset, str) => {
+    for (let i = 0; i < str.length; i += 1) {
+      view.setUint8(offset + i, str.charCodeAt(i));
+    }
+  };
+  writeString(0, "RIFF");
+  view.setUint32(4, wavSize - 8, true);
+  writeString(8, "WAVE");
+  writeString(12, "fmt ");
+  view.setUint32(16, 16, true);
+  view.setUint16(20, 1, true);
+  view.setUint16(22, 1, true);
+  view.setUint32(24, sampleRate, true);
+  view.setUint32(28, sampleRate * 2, true);
+  view.setUint16(32, 2, true);
+  view.setUint16(34, 16, true);
+  writeString(36, "data");
+  view.setUint32(40, frameCount * 2, true);
+  for (let i = 0; i < frameCount; i += 1) {
+    const t = i / sampleRate;
+    const amplitude = Math.sin(2 * Math.PI * frequency * t) * Math.exp(-decay * t);
+    view.setInt16(44 + i * 2, Math.max(-1, Math.min(1, amplitude)) * 0x7fff, true);
+  }
+  const blob = new Blob([buffer], { type: "audio/wav" });
+  const url = URL.createObjectURL(blob);
+  audioUrls.push(url);
+  const audio = new Audio(url);
+  audio.preload = "auto";
+  audio.setAttribute("playsinline", "true");
+  return audio;
+}
+
+const audioUrls = [];
+
+if (typeof window !== "undefined") {
+  const initSnakeGame = () => {
+    const canvas = /** @type {HTMLCanvasElement | null} */ (document.getElementById("snake-canvas"));
+    const scoreEl = document.getElementById("score");
+    const highScoreEl = document.getElementById("high-score");
+    const statusEl = document.getElementById("status-label");
+    const modeEl = document.getElementById("mode-indicator");
+    const pauseBtn = /** @type {HTMLButtonElement | null} */ (document.getElementById("pause-btn"));
+    const restartBtn = /** @type {HTMLButtonElement | null} */ (document.getElementById("restart-btn"));
+    const settingsBtn = /** @type {HTMLButtonElement | null} */ (document.getElementById("settings-btn"));
+    const soundBtn = /** @type {HTMLButtonElement | null} */ (document.getElementById("sound-toggle"));
+    const settingsOverlay = document.getElementById("settings-overlay");
+    const settingsForm = /** @type {HTMLFormElement | null} */ (document.getElementById("settings-form"));
+    const settingsClose = /** @type {HTMLButtonElement | null} */ (document.getElementById("settings-close"));
+    const settingsCancel = /** @type {HTMLButtonElement | null} */ (document.getElementById("settings-cancel"));
+    const gridSelect = /** @type {HTMLSelectElement | null} */ (document.getElementById("grid-size"));
+    const speedSelect = /** @type {HTMLSelectElement | null} */ (document.getElementById("speed-initial"));
+    const wrapSelect = /** @type {HTMLSelectElement | null} */ (document.getElementById("wrap-mode"));
+    const soundCheckbox = /** @type {HTMLInputElement | null} */ (document.getElementById("sound-checkbox"));
+
+    try {
+      if (
+        !canvas ||
+        !scoreEl ||
+        !highScoreEl ||
+        !statusEl ||
+        !modeEl ||
+        !pauseBtn ||
+        !restartBtn ||
+        !settingsBtn ||
+        !soundBtn ||
+        !settingsOverlay ||
+        !settingsForm ||
+        !settingsClose ||
+        !settingsCancel ||
+        !gridSelect ||
+        !speedSelect ||
+        !wrapSelect ||
+        !soundCheckbox
+      ) {
+        throw new Error("éléments requis manquants");
+      }
+
+    const ctx = canvas.getContext("2d");
+    if (!ctx) {
+      throw new Error("impossible de récupérer le contexte 2D");
+    }
+    ctx.imageSmoothingEnabled = false;
+
+    const paletteRoot = getComputedStyle(document.documentElement);
+    const palette = {
+      bg: toCssColor(parseColor(paletteRoot.getPropertyValue("--color-bg") || "#0f172a")),
+      fg: toCssColor(parseColor(paletteRoot.getPropertyValue("--color-fg") || "#f8fafc")),
+      primary: parseColor(paletteRoot.getPropertyValue("--color-primary") || "#34d399"),
+      accent: parseColor(paletteRoot.getPropertyValue("--color-accent") || "#f97316")
+    };
+    const snakeBodyColor = "#34d399";
+    const snakeHeadColor = "#6ee7b7";
+    const snakeBorderColor = "#fb923c";
+    const gridLineColor = "rgba(255,255,255,0.12)";
+
+    /** @type {{grid:number; speedKey:keyof typeof SPEED_MAP; wrap:boolean;}} */
+    const settingsState = {
+      grid: DEFAULT_GRID,
+      speedKey: "medium",
+      wrap: false
+    };
+
+    const reduceMotionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+    let prefersReducedMotion = reduceMotionQuery.matches;
+    reduceMotionQuery.addEventListener("change", (event) => {
+      prefersReducedMotion = event.matches;
+    });
+
+    /** @type {{x:number,y:number}[]} */
+    let snake = [];
+    /** @type {{x:number,y:number,icon:number}} */
+    let food = { x: 0, y: 0, icon: 0 };
+    /** @type {{x:number,y:number}} */
+    let direction = { x: 1, y: 0 };
+    /** @type {{x:number,y:number}} */
+    let nextDirection = { x: 1, y: 0 };
+    let gridSize = settingsState.grid;
+    let tickRate = SPEED_MAP[settingsState.speedKey];
+    let tickDuration = 1000 / tickRate;
+    let score = 0;
+    let highScore = Number.parseInt(localStorage.getItem(HIGH_SCORE_KEY) || "0", 10) || 0;
+    let status = /** @type {"ready"|"running"|"paused"|"gameover"} */ ("ready");
+    let accumulator = 0;
+    let lastTimestamp = 0;
+    let requestId = 0;
+    let konamiIndex = 0;
+    let pixelRatio = window.devicePixelRatio || 1;
+    let statusTimeout = 0;
+    let lastFocusedBeforeSettings = /** @type {Element | null} */ (null);
+    let pendingTouch = /** @type {{x:number,y:number,time:number}|null} */ (null);
+
+    const audio = {
+      enabled: false,
+      unlocked: false,
+      eat: createTone(880),
+      gameover: createTone(240)
+    };
+    audio.eat.volume = 0.4;
+    audio.gameover.volume = 0.55;
+
+    const fallbackIcon = new Image();
+    fallbackIcon.src = FALLBACK_ICON;
+    fallbackIcon.decoding = "async";
+
+    const iconSprites = ICON_SOURCES.map((src) => {
+      const image = new Image();
+      image.src = src;
+      image.decoding = "async";
+      image.addEventListener("error", () => {
+        if (typeof console !== "undefined" && console.warn) {
+          console.warn("Snake sprite failed to load:", src);
+        }
+      });
+      return image;
+    });
+    if (!iconSprites.length) {
+      iconSprites.push(fallbackIcon);
+    }
+    const isSpriteReady = (img) =>
+      Boolean(img && img.complete && img.naturalWidth > 0 && img.naturalHeight > 0);
+
+    const dpadButtons = Array.from(document.querySelectorAll("[data-direction]"));
+
+    const DIRECTIONS = {
+      up: { x: 0, y: -1 },
+      down: { x: 0, y: 1 },
+      left: { x: -1, y: 0 },
+      right: { x: 1, y: 0 }
+    };
+
+    const travelKeys = new Map([
+      ["ArrowUp", "up"],
+      ["ArrowDown", "down"],
+      ["ArrowLeft", "left"],
+      ["ArrowRight", "right"],
+      ["w", "up"],
+      ["W", "up"],
+      ["z", "up"],
+      ["Z", "up"],
+      ["s", "down"],
+      ["S", "down"],
+      ["a", "left"],
+      ["A", "left"],
+      ["q", "left"],
+      ["Q", "left"],
+      ["d", "right"],
+      ["D", "right"]
+    ]);
+
+    scoreEl.textContent = `${score}`;
+    highScoreEl.textContent = `${highScore}`;
+    modeEl.textContent = settingsState.wrap ? "Wrap" : "Mur";
+    refreshStatusLabel();
+
+    const resizeCanvas = (force = false) => {
+      const ratio = window.devicePixelRatio || 1;
+      const size = gridSize * CELL;
+      if (force || ratio !== pixelRatio || canvas.width !== size * ratio || canvas.height !== size * ratio) {
+        pixelRatio = ratio;
+        canvas.width = size * ratio;
+        canvas.height = size * ratio;
+        canvas.style.width = "100%";
+        canvas.style.height = "100%";
+        ctx.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
+        ctx.imageSmoothingEnabled = false;
+      }
+    };
+
+    const drawScene = () => {
+      const logicalSize = gridSize * CELL;
+      resizeCanvas();
+      ctx.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
+      ctx.fillStyle = palette.bg;
+      ctx.fillRect(0, 0, logicalSize, logicalSize);
+
+      if (!prefersReducedMotion) {
+        ctx.strokeStyle = gridLineColor;
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        for (let i = 1; i < gridSize; i += 1) {
+          const offset = i * CELL;
+          ctx.moveTo(offset + 0.5, 0);
+          ctx.lineTo(offset + 0.5, logicalSize);
+          ctx.moveTo(0, offset + 0.5);
+          ctx.lineTo(logicalSize, offset + 0.5);
+        }
+        ctx.stroke();
+      }
+
+      ctx.lineWidth = 2;
+      for (let i = snake.length - 1; i >= 0; i -= 1) {
+        const segment = snake[i];
+        const x = segment.x * CELL;
+        const y = segment.y * CELL;
+        ctx.fillStyle = i === 0 ? snakeHeadColor : snakeBodyColor;
+        ctx.fillRect(x, y, CELL, CELL);
+        ctx.strokeStyle = snakeBorderColor;
+        ctx.strokeRect(x + 0.5, y + 0.5, CELL - 1, CELL - 1);
+      }
+
+      const sprite = iconSprites[food.icon] ?? fallbackIcon;
+      if (isSpriteReady(sprite)) {
+        const size = CELL * 0.8;
+        const offset = (CELL - size) / 2;
+        ctx.drawImage(sprite, food.x * CELL + offset, food.y * CELL + offset, size, size);
+      } else if (isSpriteReady(fallbackIcon)) {
+        const size = CELL * 0.72;
+        const offset = (CELL - size) / 2;
+        ctx.drawImage(fallbackIcon, food.x * CELL + offset, food.y * CELL + offset, size, size);
+      } else {
+        ctx.fillStyle = toCssColor(palette.accent);
+        ctx.beginPath();
+        ctx.arc(food.x * CELL + CELL / 2, food.y * CELL + CELL / 2, CELL * 0.3, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    };
+
+    const placeFood = () => {
+      const available = gridSize * gridSize - snake.length;
+      if (available <= 0) {
+        triggerGameOver(true);
+        return;
+      }
+      let attempts = 0;
+      let target = { x: 0, y: 0 };
+      do {
+        target.x = Math.floor(Math.random() * gridSize);
+        target.y = Math.floor(Math.random() * gridSize);
+        attempts += 1;
+        if (attempts > 1000) break;
+      } while (snake.some((segment) => segment.x === target.x && segment.y === target.y));
+      food = { ...target, icon: iconSprites.length ? Math.floor(Math.random() * iconSprites.length) : 0 };
+    };
+
+    const createInitialSnake = () => {
+      const cx = Math.floor(gridSize / 2);
+      const cy = Math.floor(gridSize / 2);
+      return [
+        { x: cx, y: cy },
+        { x: cx - 1, y: cy },
+        { x: cx - 2, y: cy }
+      ];
+    };
+
+    const resetGame = () => {
+      gridSelect.value = `${settingsState.grid}`;
+      speedSelect.value = settingsState.speedKey;
+      wrapSelect.value = settingsState.wrap ? "wrap" : "wall";
+      gridSize = settingsState.grid;
+      tickRate = SPEED_MAP[settingsState.speedKey] ?? DEFAULT_SPEED;
+      tickDuration = 1000 / tickRate;
+      direction = { x: 1, y: 0 };
+      nextDirection = { x: 1, y: 0 };
+      snake = createInitialSnake();
+      score = 0;
+      status = "running";
+      accumulator = 0;
+      lastTimestamp = performance.now();
+      pauseBtn.disabled = false;
+      pauseBtn.setAttribute("aria-pressed", "false");
+      pauseBtn.textContent = "Pause";
+      modeEl.textContent = settingsState.wrap ? "Wrap" : "Mur";
+      updateScoreDisplay();
+      refreshStatusLabel();
+      placeFood();
+      drawScene();
+      cancelAnimationFrame(requestId);
+      requestId = requestAnimationFrame(gameLoop);
+    };
+
+    function updateScoreDisplay() {
+      scoreEl.textContent = `${score}`;
+      highScoreEl.textContent = `${highScore}`;
+    }
+
+    function refreshStatusLabel() {
+      if (status === "paused") {
+        statusEl.textContent = "Pause";
+      } else if (status === "gameover") {
+        statusEl.textContent = "Game Over";
+      } else {
+        statusEl.textContent = "En jeu";
+      }
+    }
+
+    function flashStatus(message, duration = 2200) {
+      window.clearTimeout(statusTimeout);
+      statusEl.textContent = message;
+      statusTimeout = window.setTimeout(() => {
+        refreshStatusLabel();
+      }, duration);
+    }
+
+    const gameLoop = (timestamp) => {
+      if (status === "paused") {
+        drawScene();
+        lastTimestamp = timestamp;
+        requestId = requestAnimationFrame(gameLoop);
+        return;
+      }
+      if (status !== "running") {
+        drawScene();
+        return;
+      }
+      const delta = timestamp - lastTimestamp;
+      lastTimestamp = timestamp;
+      accumulator += delta;
+      while (accumulator >= tickDuration && status === "running") {
+        advance();
+        accumulator -= tickDuration;
+      }
+      if (status === "running") {
+        drawScene();
+        requestId = requestAnimationFrame(gameLoop);
+      } else {
+        drawScene();
+      }
+    };
+
+    const advance = () => {
+      direction = nextDirection;
+      let headX = snake[0].x + direction.x;
+      let headY = snake[0].y + direction.y;
+
+      if (settingsState.wrap) {
+        headX = (headX + gridSize) % gridSize;
+        headY = (headY + gridSize) % gridSize;
+      } else {
+        if (headX < 0 || headX >= gridSize || headY < 0 || headY >= gridSize) {
+          triggerGameOver(false);
+          return;
+        }
+      }
+
+      if (snake.some((segment) => segment.x === headX && segment.y === headY)) {
+        triggerGameOver(false);
+        return;
+      }
+
+      snake.unshift({ x: headX, y: headY });
+
+      if (headX === food.x && headY === food.y) {
+        score += 1;
+        updateScoreDisplay();
+        accelerate();
+        playEatSound();
+        placeFood();
+      } else {
+        snake.pop();
+      }
+    };
+
+    const accelerate = () => {
+      tickRate = Math.min(tickRate + 0.35, 14);
+      tickDuration = 1000 / tickRate;
+    };
+
+    const triggerGameOver = (perfect) => {
+      if (status === "gameover") return;
+      status = "gameover";
+      pauseBtn.disabled = true;
+      refreshStatusLabel();
+      if (score > highScore) {
+        highScore = score;
+        localStorage.setItem(HIGH_SCORE_KEY, `${highScore}`);
+      }
+      updateScoreDisplay();
+      playGameOverSound();
+      if (perfect) {
+        flashStatus("Bravo ! Grille complète 🎉", 2800);
+      }
+      requestAnimationFrame(() => {
+        restartBtn.focus({ preventScroll: true });
+      });
+    };
+
+    const togglePause = () => {
+      if (status === "gameover") return;
+      if (status === "paused") {
+        status = "running";
+        pauseBtn.textContent = "Pause";
+        pauseBtn.setAttribute("aria-pressed", "false");
+        refreshStatusLabel();
+        lastTimestamp = performance.now();
+        requestId = requestAnimationFrame(gameLoop);
+      } else {
+        status = "paused";
+        pauseBtn.textContent = "Reprendre";
+        pauseBtn.setAttribute("aria-pressed", "true");
+        refreshStatusLabel();
+      }
+    };
+
+    const toggleSound = (nextState) => {
+      const enabled = typeof nextState === "boolean" ? nextState : !audio.enabled;
+      audio.enabled = enabled;
+      soundBtn.textContent = enabled ? "Sons ON" : "Sons OFF";
+      soundBtn.setAttribute("aria-pressed", enabled ? "true" : "false");
+      soundCheckbox.checked = enabled;
+      if (enabled) {
+        unlockAudio();
+      }
+    };
+
+    const unlockAudio = () => {
+      if (audio.unlocked) return;
+      audio.unlocked = true;
+      const warmup = (track) => {
+        try {
+          track.muted = true;
+          const playPromise = track.play();
+          if (playPromise && typeof playPromise.then === "function") {
+            playPromise
+              .then(() => {
+                track.pause();
+                track.currentTime = 0;
+                track.muted = false;
+              })
+              .catch(() => {
+                track.muted = false;
+              });
+          } else {
+            track.pause();
+            track.currentTime = 0;
+            track.muted = false;
+          }
+        } catch {
+          track.muted = false;
+        }
+      };
+      warmup(audio.eat);
+      warmup(audio.gameover);
+    };
+
+    const playEatSound = () => {
+      if (!audio.enabled) return;
+      unlockAudio();
+      try {
+        audio.eat.currentTime = 0;
+        void audio.eat.play();
+      } catch {
+        // ignore autoplay issues
+      }
+    };
+
+    const playGameOverSound = () => {
+      if (!audio.enabled) return;
+      unlockAudio();
+      try {
+        audio.gameover.currentTime = 0;
+        void audio.gameover.play();
+      } catch {
+        // ignore autoplay issues
+      }
+    };
+
+    const setDirection = (dirKey) => {
+      const next = DIRECTIONS[dirKey];
+      if (!next) return;
+      if (direction.x + next.x === 0 && direction.y + next.y === 0) return;
+      nextDirection = next;
+    };
+
+    const activateDirection = (dirKey) => {
+      if (!dirKey) return;
+      unlockAudio();
+      setDirection(dirKey);
+    };
+
+    const openSettings = () => {
+      if (!settingsOverlay.classList.contains("hidden")) return;
+      lastFocusedBeforeSettings = document.activeElement;
+      settingsOverlay.classList.remove("hidden");
+      settingsOverlay.setAttribute("data-open", "true");
+      settingsBtn.setAttribute("aria-expanded", "true");
+      populateSettingsForm();
+      document.body.dataset.snakeScrollLock = document.body.style.overflow || "";
+      document.body.style.overflow = "hidden";
+      const focusables = getFocusableElements(settingsOverlay);
+      (focusables[0] || settingsClose).focus({ preventScroll: true });
+    };
+
+    const closeSettings = () => {
+      if (settingsOverlay.classList.contains("hidden")) return;
+      settingsOverlay.classList.add("hidden");
+      settingsOverlay.removeAttribute("data-open");
+      settingsBtn.setAttribute("aria-expanded", "false");
+      document.body.style.overflow = document.body.dataset.snakeScrollLock || "";
+      delete document.body.dataset.snakeScrollLock;
+      if (lastFocusedBeforeSettings instanceof HTMLElement) {
+        lastFocusedBeforeSettings.focus({ preventScroll: true });
+      } else {
+        settingsBtn.focus({ preventScroll: true });
+      }
+    };
+
+    const populateSettingsForm = () => {
+      gridSelect.value = `${settingsState.grid}`;
+      speedSelect.value = settingsState.speedKey;
+      wrapSelect.value = settingsState.wrap ? "wrap" : "wall";
+      soundCheckbox.checked = audio.enabled;
+    };
+
+    const applySettings = () => {
+      const chosenGrid = Number.parseInt(gridSelect.value, 10);
+      settingsState.grid = Number.isFinite(chosenGrid) ? chosenGrid : DEFAULT_GRID;
+      settingsState.speedKey = /** @type {keyof typeof SPEED_MAP} */ (
+        speedSelect.value in SPEED_MAP ? speedSelect.value : "medium"
+      );
+      settingsState.wrap = wrapSelect.value === "wrap";
+      toggleSound(soundCheckbox.checked);
+      resetGame();
+      closeSettings();
+    };
+
+    const getFocusableElements = (container) => {
+      const nodes = container.querySelectorAll(
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+      );
+      return Array.from(nodes).filter(
+        (element) =>
+          element instanceof HTMLElement &&
+          !element.hasAttribute("disabled") &&
+          element.getAttribute("aria-hidden") !== "true"
+      );
+    };
+
+    const handleSettingsKeydown = (event) => {
+      if (settingsOverlay.classList.contains("hidden")) return;
+      if (event.key === "Escape") {
+        event.preventDefault();
+        closeSettings();
+        return;
+      }
+      if (event.key === "Tab") {
+        const focusables = getFocusableElements(settingsOverlay);
+        if (focusables.length === 0) {
+          event.preventDefault();
+          return;
+        }
+        const currentIndex = focusables.indexOf(document.activeElement);
+        const delta = event.shiftKey ? -1 : 1;
+        let nextIndex = currentIndex + delta;
+        if (nextIndex < 0) nextIndex = focusables.length - 1;
+        if (nextIndex >= focusables.length) nextIndex = 0;
+        event.preventDefault();
+        focusables[nextIndex].focus();
+      }
+    };
+
+    const handleKonami = (key) => {
+      const normalized = key.length === 1 ? key.toLowerCase() : key;
+      const expected = KONAMI_SEQUENCE[konamiIndex];
+      if (normalized === expected || key === expected) {
+        konamiIndex += 1;
+        if (konamiIndex === KONAMI_SEQUENCE.length) {
+          konamiIndex = 0;
+          settingsState.wrap = true;
+          wrapSelect.value = "wrap";
+          flashStatus("Konami ! Wrap activé ⚡");
+          modeEl.textContent = "Wrap";
+        }
+      } else {
+        konamiIndex = 0;
+      }
+    };
+
+    const handleKeyboard = (event) => {
+      const { key } = event;
+      handleKonami(key);
+      if (travelKeys.has(key)) {
+        event.preventDefault();
+        unlockAudio();
+        setDirection(travelKeys.get(key));
+        return;
+      }
+      if (key === " " || key === "Spacebar" || key.toLowerCase() === "p") {
+        event.preventDefault();
+        togglePause();
+        return;
+      }
+      if (key.toLowerCase() === "r") {
+        event.preventDefault();
+        resetGame();
+        return;
+      }
+      if (key.toLowerCase() === "f") {
+        event.preventDefault();
+        openSettings();
+      }
+    };
+
+    const handleTouchStart = (event) => {
+      const touch = event.changedTouches[0];
+      if (!touch) return;
+      pendingTouch = { x: touch.clientX, y: touch.clientY, time: Date.now() };
+    };
+
+    const handleTouchEnd = (event) => {
+      if (!pendingTouch) return;
+      const touch = event.changedTouches[0];
+      if (!touch) {
+        pendingTouch = null;
+        return;
+      }
+      const dx = touch.clientX - pendingTouch.x;
+      const dy = touch.clientY - pendingTouch.y;
+      const absX = Math.abs(dx);
+      const absY = Math.abs(dy);
+      if (Math.max(absX, absY) >= 30) {
+        unlockAudio();
+        if (absX > absY) {
+          setDirection(dx > 0 ? "right" : "left");
+        } else {
+          setDirection(dy > 0 ? "down" : "up");
+        }
+      }
+      pendingTouch = null;
+    };
+
+    const handleResize = (() => {
+      let frame = 0;
+      return () => {
+        if (frame) cancelAnimationFrame(frame);
+        frame = requestAnimationFrame(() => {
+          resizeCanvas(true);
+          drawScene();
+          frame = 0;
+        });
+      };
+    })();
+
+    window.addEventListener("keydown", handleKeyboard);
+    window.addEventListener("resize", handleResize);
+    window.addEventListener("beforeunload", () => {
+      audioUrls.forEach((url) => URL.revokeObjectURL(url));
+    });
+    canvas.addEventListener("touchstart", handleTouchStart, { passive: true });
+    canvas.addEventListener("touchend", handleTouchEnd, { passive: true });
+
+    pauseBtn.addEventListener("click", () => {
+      unlockAudio();
+      togglePause();
+    });
+    restartBtn.addEventListener("click", () => {
+      unlockAudio();
+      resetGame();
+    });
+    settingsBtn.addEventListener("click", () => {
+      if (settingsOverlay.classList.contains("hidden")) {
+        openSettings();
+      } else {
+        closeSettings();
+      }
+    });
+    settingsClose.addEventListener("click", closeSettings);
+    settingsCancel.addEventListener("click", closeSettings);
+    soundBtn.addEventListener("click", () => {
+      toggleSound();
+    });
+    soundCheckbox.addEventListener("change", () => {
+      toggleSound(soundCheckbox.checked);
+    });
+
+    settingsForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+      applySettings();
+    });
+
+    settingsOverlay.addEventListener("keydown", handleSettingsKeydown);
+
+    dpadButtons.forEach((element) => {
+      element.addEventListener("pointerdown", (event) => {
+        event.preventDefault();
+        const dir = element.getAttribute("data-direction");
+        if (!dir) return;
+        element.classList.add("bg-[color:var(--color-accent,#f97316)]/25");
+        activateDirection(dir);
+      });
+      const cleanup = () => {
+        element.classList.remove("bg-[color:var(--color-accent,#f97316)]/25");
+      };
+      element.addEventListener("pointerup", cleanup);
+      element.addEventListener("pointerleave", cleanup);
+      element.addEventListener("pointercancel", cleanup);
+      element.addEventListener("click", (event) => {
+        event.preventDefault();
+        const dir = element.getAttribute("data-direction");
+        cleanup();
+        activateDirection(dir);
+      });
+      element.addEventListener("keydown", (event) => {
+        if (event.key !== "Enter" && event.key !== " ") return;
+        event.preventDefault();
+        const dir = element.getAttribute("data-direction");
+        activateDirection(dir);
+      });
+    });
+
+    settingsOverlay.addEventListener("click", (event) => {
+      if (event.target === settingsOverlay) {
+        closeSettings();
+      }
+    });
+
+    toggleSound(false);
+    resetGame();
+    statusEl.setAttribute("data-snake-ready", "true");
+    if (typeof console !== "undefined" && typeof console.info === "function") {
+      console.info("Snake initialised");
+    }
+    } catch (error) {
+      if (typeof console !== "undefined" && typeof console.error === "function") {
+        console.error("Snake init error", error);
+      }
+      const message = error instanceof Error ? error.message : "Erreur inconnue";
+      const statusNode = document.getElementById("status-label");
+      if (statusNode) {
+        statusNode.textContent = `Erreur : ${message}`;
+        statusNode.setAttribute("data-snake-ready", "false");
+      }
+    }
+  };
+
+  if (document.readyState === "loading") {
+    window.addEventListener("DOMContentLoaded", initSnakeGame, { once: true });
+  } else {
+    initSnakeGame();
+  }
+}
+	</script>
+</Layout>
