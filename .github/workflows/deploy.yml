@@ -48,23 +48,26 @@ jobs:
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         port: 22
         script: |
-          # Charger nvm dans ce shell non interactif
+          # Charger nvm
           export NVM_DIR="$HOME/.nvm"
           [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
 
-          # Utiliser Node 20 (installée avant sur le VPS)
           nvm use 20
-
-          # S'assurer que pm2 est dispo (au cas où)
           npm install -g pm2
 
-          # Aller dans le dossier server généré par Astro
           cd /var/www/portfolio-app/server
 
-          # Installer les dépendances de prod
           npm ci --omit=dev
           npm install astro @astrojs/node send server-destroy
 
-          # Lancer ou redémarrer l'app SSR sur le port 8082
+          # Export des variables d'environnement pour l'app
+          export SMTP_HOST='${{ secrets.SMTP_HOST }}'
+          export SMTP_PORT='${{ secrets.SMTP_PORT }}'
+          export SMTP_USER='${{ secrets.SMTP_USER }}'
+          export SMTP_PASS='${{ secrets.SMTP_PASS }}'
+          export TO_EMAIL='${{ secrets.TO_EMAIL }}'
+          export OPENAI_API_KEY='${{ secrets.OPENAI_API_KEY }}'
+          export POCKETBASE_URL='${{ secrets.POCKETBASE_URL }}'
+
           PORT=8082 pm2 restart portfolio-app || PORT=8082 pm2 start entry.mjs --name portfolio-app
  
