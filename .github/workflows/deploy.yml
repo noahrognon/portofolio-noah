@@ -51,4 +51,4 @@ jobs:
           cd /var/www/portfolio-app/server
           npm ci --omit=dev
           npm install astro send server-destroy
-          PORT=8082 pm2 restart portfolio || PORT=8082 pm2 start entry.mjs --name portfolio
+          PORT=8082 pm2 restart portfolio-app || PORT=8082 pm2 start entry.mjs --name portfolio-app 
