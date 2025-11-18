@@ -1,7 +1,7 @@
 
 
-const { gsap } = window;
-const { ScrollTrigger } = window;
+const gsap = window.gsap;
+const ScrollTrigger = window.ScrollTrigger;
 
 
 const prefersReducedMotion = () =>
@@ -13,7 +13,15 @@ const initScrollAnimations = () => {
 		return;
 	}
 
-	gsap.registerPlugin(ScrollTrigger);
+	if (!gsap) {
+		console.warn("GSAP not found. Animations disabled.");
+		return;
+	}
+	if (ScrollTrigger) {
+		gsap.registerPlugin(ScrollTrigger);
+	} else {
+		console.warn("ScrollTrigger plugin not found. Scroll-based animations will fall back to a light scroll listener.");
+	}
 
 	const revealContainers = gsap.utils.toArray(
 		".hero-section, section, [data-reveal], .reveal-block"
@@ -282,20 +290,39 @@ const initBackgroundBlobs = () => {
 		});
 
 		// Suivi du scroll global (optionnel, pour un effet léger)
-		ScrollTrigger.create({
-			trigger: document.body,
-			start: "top top",
-			end: "bottom bottom",
-			onUpdate: (self) => {
-				const progress = self.progress;
-				gsap.to(blob, {
-					yPercent: gsap.utils.mapRange(0, 1, -25, 25, progress),
-					overwrite: "auto",
-					duration: 1,
-					ease: "sine.out",
-				});
-			},
-		});
+		if (typeof ScrollTrigger !== "undefined" && ScrollTrigger.create) {
+			ScrollTrigger.create({
+				trigger: document.body,
+				start: "top top",
+				end: "bottom bottom",
+				onUpdate: (self) => {
+					const progress = self.progress;
+					gsap.to(blob, {
+						yPercent: gsap.utils.mapRange(0, 1, -25, 25, progress),
+						overwrite: "auto",
+						duration: 1,
+						ease: "sine.out",
+					});
+				},
+			});
+		} else {
+			// Fallback: simple scroll listener for a subtle effect when ScrollTrigger is not available
+			let lastProgress = 0;
+			const onScroll = () => {
+				const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+				const progress = docHeight > 0 ? window.scrollY / docHeight : 0;
+				if (Math.abs(progress - lastProgress) > 0.005) {
+					gsap.to(blob, {
+						yPercent: gsap.utils.mapRange(0, 1, -25, 25, progress),
+						overwrite: "auto",
+						duration: 0.8,
+						ease: "sine.out",
+					});
+					lastProgress = progress;
+				}
+			};
+			window.addEventListener("scroll", onScroll, { passive: true });
+		}
 	});
 };
 
