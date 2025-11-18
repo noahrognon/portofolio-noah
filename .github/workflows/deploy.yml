@@ -22,6 +22,14 @@ jobs:
       run: npm ci
       
     - name: Build project
+      env:
+        SMTP_HOST: ${{ secrets.SMTP_HOST }}
+        SMTP_PORT: ${{ secrets.SMTP_PORT }}
+        SMTP_USER: ${{ secrets.SMTP_USER }}
+        SMTP_PASS: ${{ secrets.SMTP_PASS }}
+        TO_EMAIL: ${{ secrets.TO_EMAIL }}
+        OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        POCKETBASE_URL: ${{ secrets.POCKETBASE_URL }}
       run: |
         npm run build
         cp package.json dist/server/
@@ -60,14 +68,8 @@ jobs:
           npm ci --omit=dev
           npm install astro @astrojs/node send server-destroy
 
-          # Export des variables d'environnement pour l'app
-          export SMTP_HOST='${{ secrets.SMTP_HOST }}'
-          export SMTP_PORT='${{ secrets.SMTP_PORT }}'
-          export SMTP_USER='${{ secrets.SMTP_USER }}'
-          export SMTP_PASS='${{ secrets.SMTP_PASS }}'
-          export TO_EMAIL='${{ secrets.TO_EMAIL }}'
-          export OPENAI_API_KEY='${{ secrets.OPENAI_API_KEY }}'
-          export POCKETBASE_URL='${{ secrets.POCKETBASE_URL }}'
+       
+          
 
           PORT=8082 pm2 restart portfolio-app || PORT=8082 pm2 start entry.mjs --name portfolio-app
  
