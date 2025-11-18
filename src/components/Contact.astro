@@ -253,21 +253,28 @@ import linkedinIcon from "../assets/icons/Linkedin.svg";
 			});
 
 			if (!response.ok) {
-				const text = await response.text();
-				console.error("PocketBase error:", response.status, text);
-				throw new Error(
-					`Request failed with status ${response.status}`,
-				);
+				let bodyText = "";
+				try {
+					bodyText = await response.text();
+					try { bodyText = JSON.stringify(JSON.parse(bodyText), null, 2); } catch (e) {}
+				} catch (e) {
+					bodyText = "(no body)";
+				}
+				console.error("PocketBase error:", response.status, bodyText);
+				showFeedback(`Erreur serveur (${response.status}) : ${bodyText}`, "error");
+				throw new Error(`Request failed with status ${response.status}`);
 			}
 
 			showFeedback("Votre message a bien ete envoye, merci !", "success");
 			event.target.reset();
 		} catch (error) {
 			console.error("Contact form error:", error);
-			showFeedback(
-				"Une erreur est survenue, veuillez reessayer plus tard.",
-				"error",
-			);
+			if (!feedback || feedback.textContent === "") {
+				showFeedback(
+					"Une erreur est survenue, veuillez reessayer plus tard.",
+					"error",
+				);
+			}
 		} finally {
 			submitButton?.removeAttribute("disabled");
 			submitButton?.classList.remove("opacity-70", "cursor-not-allowed");
