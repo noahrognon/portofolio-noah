@@ -256,13 +256,24 @@ import linkedinIcon from "../assets/icons/Linkedin.svg";
 				let bodyText = "";
 				try {
 					bodyText = await response.text();
-					try { bodyText = JSON.stringify(JSON.parse(bodyText), null, 2); } catch (e) {}
+					try {
+						bodyText = JSON.stringify(
+							JSON.parse(bodyText),
+							null,
+							2,
+						);
+					} catch (e) {}
 				} catch (e) {
 					bodyText = "(no body)";
 				}
 				console.error("PocketBase error:", response.status, bodyText);
-				showFeedback(`Erreur serveur (${response.status}) : ${bodyText}`, "error");
-				throw new Error(`Request failed with status ${response.status}`);
+				showFeedback(
+					`Erreur serveur (${response.status}) : ${bodyText}`,
+					"error",
+				);
+				throw new Error(
+					`Request failed with status ${response.status}`,
+				);
 			}
 
 			showFeedback("Votre message a bien ete envoye, merci !", "success");
