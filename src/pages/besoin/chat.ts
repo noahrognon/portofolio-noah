@@ -3,9 +3,15 @@ import { OpenAI } from "openai";
 
 export const prerender = false;
 
-const client = new OpenAI({
-	apiKey: import.meta.env.OPENAI_API_KEY,
-});
+const getOpenAIKey = () => import.meta.env.OPENAI_API_KEY || process.env.OPENAI_API_KEY;
+const getOpenAIClient = () => {
+	const key = getOpenAIKey();
+	if (!key) {
+		console.error("[api/chat] Missing OpenAI API key. Set OPENAI_API_KEY environment variable.");
+		return null;
+	}
+	return new OpenAI({ apiKey: key });
+};
 
 export const POST: APIRoute = async ({ request }) => {
 	try {
@@ -56,6 +62,14 @@ Si tu ne possèdes pas l'information ou si la question sort du contexte, indique
 				content: `CONTEXTE:\n${context}\n\nQUESTION:\n${question}`,
 			},
 		];
+
+		const client = getOpenAIClient();
+		if (!client) {
+			return new Response(
+				JSON.stringify({ error: "OpenAI API key missing on server." }),
+				{ status: 500, headers: { "Content-Type": "application/json" } }
+			);
+		}
 
 		const completion = await client.chat.completions.create({
 			model: "gpt-4o-mini",

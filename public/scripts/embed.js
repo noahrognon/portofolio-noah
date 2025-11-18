@@ -11,7 +11,12 @@ const POCKETBASE_FALLBACK = "https://portfolio.noahrognon.fr:443";
 const pbBase = process.env.POCKETBASE_URL || POCKETBASE_FALLBACK;
 console.log("[embed script] PocketBase base URL:", pbBase);
 const pb = new PocketBase(pbBase);
-const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+const apiKey = process.env.OPENAI_API_KEY;
+if (!apiKey) {
+    console.error("[embed script] Missing OPENAI_API_KEY environment variable. Set it in your .env or environment.");
+    process.exit(1);
+}
+const client = new OpenAI({ apiKey });
 
 const DATA_DIR = "./data"; // dossier où tu as tes .md
 const COLLECTION = "kb_chunks";
