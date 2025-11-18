@@ -3,7 +3,12 @@ import PocketBase from "pocketbase";
 
 export const prerender = false;
 
-const pb = new PocketBase(import.meta.env.POCKETBASE_URL);
+// Ensure we have an absolute PocketBase URL on the server. Fall back to the
+// known production URL if the env var is not set.
+const POCKETBASE_FALLBACK = "https://portfolio.noahrognon.fr:443";
+const pbBase = import.meta.env.POCKETBASE_URL || process.env.POCKETBASE_URL || POCKETBASE_FALLBACK;
+console.log("[api/chunks] PocketBase base URL:", pbBase);
+const pb = new PocketBase(pbBase);
 
 export const GET: APIRoute = async () => {
 	try {

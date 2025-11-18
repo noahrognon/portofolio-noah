@@ -6,7 +6,11 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-const pb = new PocketBase(process.env.POCKETBASE_URL);
+// Ensure pb has an absolute URL. Prefer env, otherwise fallback to production host.
+const POCKETBASE_FALLBACK = "https://portfolio.noahrognon.fr:443";
+const pbBase = process.env.POCKETBASE_URL || POCKETBASE_FALLBACK;
+console.log("[embed script] PocketBase base URL:", pbBase);
+const pb = new PocketBase(pbBase);
 const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 const DATA_DIR = "./data"; // dossier où tu as tes .md
