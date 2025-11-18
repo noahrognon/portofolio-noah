@@ -1,5 +1,8 @@
-import { gsap } from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+
+const { gsap } = window;
+const { ScrollTrigger } = window;
+
 
 const prefersReducedMotion = () =>
 	window.matchMedia &&
