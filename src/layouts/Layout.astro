@@ -2,7 +2,7 @@
 import Header from "../components/Header.astro";
 import "../styles/global.css";
 import Footer from "../components/Footer.astro";
-import animationsUrl from "../scripts/animations.js?url";
+import animationsUrl from "/scripts/animations.js?url";
 ---
 
 <!doctype html>
@@ -13,6 +13,7 @@ import animationsUrl from "../scripts/animations.js?url";
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<meta name="generator" content={Astro.generator} />
 		<title>Noah ROGNON</title>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
 	</head>
 	<body>
 		<Header />
