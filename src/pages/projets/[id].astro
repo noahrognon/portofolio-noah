@@ -2,7 +2,10 @@
 import Layout from "../../layouts/Layout.astro";
 import Contact from "../../components/Contact.astro";
 import Chat from "../../components/ChatIA.astro";
-import { getProjectDetailsList, getProjectDetail } from "../../fonction/backend.js";
+import {
+	getProjectDetailsList,
+	getProjectDetail,
+} from "../../fonction/backend.js";
 
 export async function getStaticPaths() {
 	const projects = await getProjectDetailsList();
@@ -33,20 +36,35 @@ const formatNumber = (value, suffix = "") => {
 
 const heroMetrics = [
 	project.metrics.durationWeeks
-		? { label: "Durée", value: formatNumber(project.metrics.durationWeeks, " sem") }
+		? {
+				label: "Durée",
+				value: formatNumber(project.metrics.durationWeeks, " sem"),
+			}
 		: null,
 	project.metrics.hours
-		? { label: "Heures de dev", value: formatNumber(project.metrics.hours, " h") }
+		? {
+				label: "Heures de dev",
+				value: formatNumber(project.metrics.hours, " h"),
+			}
 		: null,
 	project.metrics.techCount
-		? { label: "Technologies", value: formatNumber(project.metrics.techCount) }
+		? {
+				label: "Technologies",
+				value: formatNumber(project.metrics.techCount),
+			}
 		: null,
-	project.metrics.year ? { label: "Année", value: project.metrics.year } : null,
+	project.metrics.year
+		? { label: "Année", value: project.metrics.year }
+		: null,
 ]
 	.filter(Boolean)
 	.slice(0, 4);
 
-const heroImage = project.heroImage ?? project.gallery.desktop ?? project.result.desktopImage ?? null;
+const heroImage =
+	project.heroImage ??
+	project.gallery.desktop ??
+	project.result.desktopImage ??
+	null;
 const contextStats = project.context.stats ?? [];
 const contextHighlights = project.context.highlights ?? [];
 const processSteps = project.process.steps ?? [];
@@ -60,172 +78,263 @@ const summaryStats = [
 		? {
 				label: project.stats.weeks.title || "Semaines de développement",
 				value: formatNumber(project.stats.weeks.value),
-		  }
+			}
 		: null,
 	project.stats.tech?.value
 		? {
 				label: project.stats.tech.title || "Technologies maîtrisées",
 				value: formatNumber(project.stats.tech.value),
-		  }
+			}
 		: null,
 	project.stats.hours?.value
 		? {
 				label: project.stats.hours.title || "Heures de développement",
 				value: formatNumber(project.stats.hours.value),
-		  }
+			}
 		: null,
 	project.stats.performance?.value
 		? {
-				label: project.stats.performance.title || "Score de performance",
+				label:
+					project.stats.performance.title || "Score de performance",
 				value: `${formatNumber(project.stats.performance.value)}%`,
-		  }
+			}
 		: null,
 ].filter(Boolean);
 
 const toPointList = (points) =>
 	(points ?? [])
-		.map((point) => (typeof point === "string" ? point : point?.text ?? point?.title ?? point?.label ?? ""))
+		.map((point) =>
+			typeof point === "string"
+				? point
+				: (point?.text ?? point?.title ?? point?.label ?? ""),
+		)
 		.filter(Boolean);
 
-const formattedResultPoints = resultPoints.map((point) => point.text || point.title).filter(Boolean);
+const formattedResultPoints = resultPoints
+	.map((point) => point.text || point.title)
+	.filter(Boolean);
 ---
 
 <Layout title={`${project.title} – Projet`}>
 	<main class="bg-[#03060b] text-white">
-		<section class="relative overflow-hidden border-b border-white/5 bg-gradient-to-b from-[#05070c] via-[#050912] to-[#0a0f1b] py-20">
+		<section
+			class="relative overflow-hidden border-b border-white/5 bg-gradient-to-b from-[#05070c] via-[#050912] to-[#0a0f1b] py-20"
+		>
 			<div class="absolute inset-0 opacity-40">
-				<div class="h-full w-full bg-[radial-gradient(circle_at_top,_rgba(255,122,0,0.25),_transparent_55%)]"></div>
+				<div
+					class="h-full w-full bg-[radial-gradient(circle_at_top,_rgba(255,122,0,0.25),_transparent_55%)]"
+				>
+				</div>
 			</div>
-			<div class="relative mx-auto flex max-w-6xl flex-col gap-12 lg:flex-row lg:items-center">
+			<div
+				class="relative mx-auto flex max-w-6xl flex-col gap-12 lg:flex-row lg:items-center"
+			>
 				<div class="flex-1 space-y-6">
-					<div class="flex flex-wrap gap-3 text-sm font-semibold uppercase tracking-wide text-[#ffb366]">
-						{project.subtitle && (
-							<span class="inline-flex items-center rounded-full bg-[#ff7a00]/15 px-4 py-1 text-[#ff7a00]">
-								{project.subtitle}
-							</span>
-						)}
-						{!project.subtitle && project.tags.length > 0 && (
-							<span class="inline-flex items-center rounded-full bg-[#ff7a00]/15 px-4 py-1 text-[#ff7a00]">
-								{project.tags[0]}
-							</span>
-						)}
+					<div
+						class="flex flex-wrap gap-3 text-sm font-semibold uppercase tracking-wide text-[#ffb366]"
+					>
+						{
+							project.subtitle && (
+								<span class="inline-flex items-center rounded-full bg-[#ff7a00]/15 px-4 py-1 text-[#ff7a00]">
+									{project.subtitle}
+								</span>
+							)
+						}
+						{
+							!project.subtitle && project.tags.length > 0 && (
+								<span class="inline-flex items-center rounded-full bg-[#ff7a00]/15 px-4 py-1 text-[#ff7a00]">
+									{project.tags[0]}
+								</span>
+							)
+						}
 					</div>
-					<h1 class="text-4xl font-semibold leading-tight sm:text-5xl">{project.title}</h1>
-					{project.tagline && <p class="text-lg text-slate-300">{project.tagline}</p>}
+					<h1
+						class="text-4xl font-semibold leading-tight sm:text-5xl"
+					>
+						{project.title}
+					</h1>
+					{
+						project.tagline && (
+							<p class="text-lg text-slate-300">
+								{project.tagline}
+							</p>
+						)
+					}
 
-					{heroMetrics.length > 0 && (
-						<dl class="mt-8 grid gap-6 sm:grid-cols-2">
-							{heroMetrics.map((metric) => (
-								<div class="rounded-2xl border border-white/5 bg-white/5 px-6 py-5" role="presentation">
-									<dt class="text-xs uppercase tracking-[0.2em] text-slate-400">{metric.label}</dt>
-									<dd class="mt-2 text-2xl font-semibold text-white">{metric.value}</dd>
-								</div>
-							))}
-						</dl>
-					)}
+					{
+						heroMetrics.length > 0 && (
+							<dl class="mt-8 grid gap-6 sm:grid-cols-2">
+								{heroMetrics.map((metric) => (
+									<div
+										class="rounded-2xl border border-white/5 bg-white/5 px-6 py-5"
+										role="presentation"
+									>
+										<dt class="text-xs uppercase tracking-[0.2em] text-slate-400">
+											{metric.label}
+										</dt>
+										<dd class="mt-2 text-2xl font-semibold text-white">
+											{metric.value}
+										</dd>
+									</div>
+								))}
+							</dl>
+						)
+					}
 
 					<div class="flex flex-wrap gap-4 pt-4">
-						{project.ctas.project && (
-							<a
-								href={project.ctas.project}
-								target="_blank"
-								rel="noopener noreferrer"
-								class="inline-flex items-center gap-2 rounded-full bg-[#ff7a00] px-6 py-3 text-sm font-semibold uppercase tracking-wide text-black transition hover:-translate-y-0.5 hover:bg-[#ff8c26]"
-							>
-								Visiter le projet
-								<span aria-hidden="true">↗</span>
-							</a>
-						)}
-						{project.ctas.ai && (
-							<a
-								href={project.ctas.ai}
-								target="_blank"
-								rel="noopener noreferrer"
-								class="inline-flex items-center gap-2 rounded-full border border-[#ff7a00]/40 px-6 py-3 text-sm font-semibold uppercase tracking-wide text-[#ffb366] transition hover:-translate-y-0.5 hover:bg-white/5"
-							>
-								Tester l'IA
-								<span aria-hidden="true">↗</span>
-							</a>
-						)}
+						{
+							project.ctas.project && (
+								<a
+									href={project.ctas.project}
+									target="_blank"
+									rel="noopener noreferrer"
+									class="inline-flex items-center gap-2 rounded-full bg-[#ff7a00] px-6 py-3 text-sm font-semibold uppercase tracking-wide text-black transition hover:-translate-y-0.5 hover:bg-[#ff8c26]"
+								>
+									Visiter le projet
+									<span aria-hidden="true">↗</span>
+								</a>
+							)
+						}
+						{
+							project.ctas.ai && (
+								<a
+									href={project.ctas.ai}
+									target="_blank"
+									rel="noopener noreferrer"
+									class="inline-flex items-center gap-2 rounded-full border border-[#ff7a00]/40 px-6 py-3 text-sm font-semibold uppercase tracking-wide text-[#ffb366] transition hover:-translate-y-0.5 hover:bg-white/5"
+								>
+									Tester l'IA
+									<span aria-hidden="true">↗</span>
+								</a>
+							)
+						}
 					</div>
 				</div>
 				<div class="flex-1">
-					<div class="relative rounded-[2.5rem] border border-white/5 bg-gradient-to-br from-[#0b101a] to-[#151b29] p-6 shadow-[0_25px_60px_rgba(0,0,0,0.45)]">
-						{heroImage ? (
-							<img
-								src={heroImage}
-								alt={`Visuel principal du projet ${project.title}`}
-								class="w-full rounded-[1.75rem] object-cover"
-								loading="lazy"
-							/>
-						) : (
-							<div class="flex h-64 items-center justify-center rounded-[1.75rem] bg-black/30 text-sm text-slate-400">
-								Visuel en préparation
-							</div>
-						)}
-						<div class="pointer-events-none absolute inset-0 rounded-[2.5rem] border border-white/5 opacity-20"></div>
+					<div
+						class="relative rounded-[2.5rem] border border-white/5 bg-gradient-to-br from-[#0b101a] to-[#151b29] p-6 shadow-[0_25px_60px_rgba(0,0,0,0.45)]"
+					>
+						{
+							heroImage ? (
+								<img
+									src={heroImage}
+									alt={`Visuel principal du projet ${project.title}`}
+									class="w-full rounded-[1.75rem] object-cover"
+									loading="lazy"
+								/>
+							) : (
+								<div class="flex h-64 items-center justify-center rounded-[1.75rem] bg-black/30 text-sm text-slate-400">
+									Visuel en préparation
+								</div>
+							)
+						}
+						<div
+							class="pointer-events-none absolute inset-0 rounded-[2.5rem] border border-white/5 opacity-20"
+						>
+						</div>
 					</div>
 				</div>
 			</div>
 		</section>
 
 		<section class="border-b border-white/5 bg-[#050810] py-20">
-			<div class="mx-auto grid max-w-6xl gap-12 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)]">
+			<div
+				class="mx-auto grid max-w-6xl gap-12 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)]"
+			>
 				<div class="space-y-6">
 					<div>
-						<p class="text-sm uppercase tracking-[0.3em] text-[#ff7a00]">
-							{project.context.title || "Contexte & Problématique"}
+						<p
+							class="text-sm uppercase tracking-[0.3em] text-[#ff7a00]"
+						>
+							{
+								project.context.title ||
+									"Contexte & Problématique"
+							}
 						</p>
-						<h2 class="mt-2 text-3xl font-semibold">{project.context.title || "Contexte & Problématique"}</h2>
+						<h2 class="mt-2 text-3xl font-semibold">
+							{
+								project.context.title ||
+									"Contexte & Problématique"
+							}
+						</h2>
 					</div>
-					{project.context.paragraphs.map((paragraph) => (
-						<p class="text-base text-slate-300">{paragraph}</p>
-					))}
+					{
+						project.context.paragraphs.map((paragraph) => (
+							<p class="text-base text-slate-300">{paragraph}</p>
+						))
+					}
 
-					{contextHighlights.length > 0 && (
-						<ul class="mt-8 space-y-6">
-							{contextHighlights.map((highlight, index) => (
-								<li class="rounded-2xl border border-white/5 bg-white/5 p-5">
-									<div class="flex items-start gap-4">
-										<div class="flex h-10 w-10 items-center justify-center rounded-full bg-[#ff7a00]/15 text-sm font-semibold text-[#ff7a00]">
-											{String(index + 1).padStart(2, "0")}
+					{
+						contextHighlights.length > 0 && (
+							<ul class="mt-8 space-y-6">
+								{contextHighlights.map((highlight, index) => (
+									<li class="rounded-2xl border border-white/5 bg-white/5 p-5">
+										<div class="flex items-start gap-4">
+											<div class="flex h-10 w-10 items-center justify-center rounded-full bg-[#ff7a00]/15 text-sm font-semibold text-[#ff7a00]">
+												{String(index + 1).padStart(
+													2,
+													"0",
+												)}
+											</div>
+											<div class="flex-1 space-y-2">
+												<h3 class="text-lg font-semibold">
+													{highlight.title}
+												</h3>
+												<p class="text-sm text-slate-300">
+													{highlight.description}
+												</p>
+												{highlight.points &&
+													highlight.points.length >
+														0 && (
+														<ul class="list-disc space-y-1 pl-5 text-sm text-slate-400">
+															{highlight.points.map(
+																(point) => (
+																	<li>
+																		{point}
+																	</li>
+																),
+															)}
+														</ul>
+													)}
+											</div>
 										</div>
-										<div class="flex-1 space-y-2">
-											<h3 class="text-lg font-semibold">{highlight.title}</h3>
-											<p class="text-sm text-slate-300">{highlight.description}</p>
-											{highlight.points && highlight.points.length > 0 && (
-												<ul class="list-disc space-y-1 pl-5 text-sm text-slate-400">
-													{highlight.points.map((point) => (
-														<li>{point}</li>
-													))}
-												</ul>
-											)}
-										</div>
-									</div>
-								</li>
-							))}
-						</ul>
-					)}
+									</li>
+								))}
+							</ul>
+						)
+					}
 				</div>
 
 				<div class="space-y-6">
-					{contextStats.length > 0 && (
-						<div class="grid gap-4 sm:grid-cols-2">
-							{contextStats.map((stat) => (
-								<div class="rounded-2xl border border-white/5 bg-gradient-to-br from-white/10 to-white/5 px-6 py-5 text-center">
-									<p class="text-4xl font-semibold text-[#ff7a00]">{stat.value}</p>
-									<p class="mt-2 text-sm text-slate-300">{stat.label}</p>
-								</div>
-							))}
-						</div>
-					)}
+					{
+						contextStats.length > 0 && (
+							<div class="grid gap-4 sm:grid-cols-2">
+								{contextStats.map((stat) => (
+									<div class="rounded-2xl border border-white/5 bg-gradient-to-br from-white/10 to-white/5 px-6 py-5 text-center">
+										<p class="text-4xl font-semibold text-[#ff7a00]">
+											{stat.value}
+										</p>
+										<p class="mt-2 text-sm text-slate-300">
+											{stat.label}
+										</p>
+									</div>
+								))}
+							</div>
+						)
+					}
 
-					{project.context.solution.title && (
-						<div class="rounded-[2rem] border border-[#ff7a00]/30 bg-[#ff7a00]/10 p-6 text-slate-100">
-							<p class="text-xs uppercase tracking-[0.3em] text-[#ff7a00]">{project.context.solution.title}</p>
-							<p class="mt-3 text-base">{project.context.solution.text}</p>
-						</div>
-					)}
+					{
+						project.context.solution.title && (
+							<div class="rounded-[2rem] border border-[#ff7a00]/30 bg-[#ff7a00]/10 p-6 text-slate-100">
+								<p class="text-xs uppercase tracking-[0.3em] text-[#ff7a00]">
+									{project.context.solution.title}
+								</p>
+								<p class="mt-3 text-base">
+									{project.context.solution.text}
+								</p>
+							</div>
+						)
+					}
 				</div>
 			</div>
 		</section>
@@ -233,123 +342,182 @@ const formattedResultPoints = resultPoints.map((point) => point.text || point.ti
 		<section class="border-b border-white/5 bg-[#04070d] py-20">
 			<div class="mx-auto max-w-6xl">
 				<div class="max-w-2xl">
-					<p class="text-sm uppercase tracking-[0.3em] text-[#ff7a00]">{project.process.title || "Processus de création"}</p>
-					<h2 class="mt-2 text-3xl font-semibold">{project.process.title || "Processus de création"}</h2>
-					{project.process.intro && <p class="mt-4 text-base text-slate-300">{project.process.intro}</p>}
+					<p
+						class="text-sm uppercase tracking-[0.3em] text-[#ff7a00]"
+					>
+						{project.process.title || "Processus de création"}
+					</p>
+					<h2 class="mt-2 text-3xl font-semibold">
+						{project.process.title || "Processus de création"}
+					</h2>
+					{
+						project.process.intro && (
+							<p class="mt-4 text-base text-slate-300">
+								{project.process.intro}
+							</p>
+						)
+					}
 				</div>
 
 				<div class="mt-12 space-y-10">
-					{processSteps.map((step) => (
-						<article class="rounded-[2rem] border border-white/5 bg-white/5 p-8 shadow-[0_30px_70px_rgba(0,0,0,0.45)]">
-							<div class="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(240px,320px)] lg:items-center">
-								<div class="space-y-4">
-									<p class="text-sm uppercase tracking-[0.4em] text-[#ff7a00]">
-										Étape {String(step.index).padStart(2, "0")}
-									</p>
-									<h3 class="text-2xl font-semibold">{step.title}</h3>
-									<p class="text-slate-300">{step.description}</p>
-									{toPointList(step.points).length > 0 && (
-										<ul class="list-disc space-y-1 pl-5 text-sm text-slate-400">
-											{toPointList(step.points).map((point) => (
-												<li>{point}</li>
-											))}
-										</ul>
-									)}
-									{step.tags && step.tags.length > 0 && (
-										<div class="flex flex-wrap gap-2 pt-4">
-											{step.tags.map((tag) => (
-												<span class="rounded-full border border-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-slate-200">
-													{tag}
-												</span>
-											))}
-										</div>
-									)}
+					{
+						processSteps.map((step) => (
+							<article class="rounded-[2rem] border border-white/5 bg-white/5 p-8 shadow-[0_30px_70px_rgba(0,0,0,0.45)]">
+								<div class="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(240px,320px)] lg:items-center">
+									<div class="space-y-4">
+										<p class="text-sm uppercase tracking-[0.4em] text-[#ff7a00]">
+											Étape{" "}
+											{String(step.index).padStart(
+												2,
+												"0",
+											)}
+										</p>
+										<h3 class="text-2xl font-semibold">
+											{step.title}
+										</h3>
+										<p class="text-slate-300">
+											{step.description}
+										</p>
+										{toPointList(step.points).length >
+											0 && (
+											<ul class="list-disc space-y-1 pl-5 text-sm text-slate-400">
+												{toPointList(step.points).map(
+													(point) => (
+														<li>{point}</li>
+													),
+												)}
+											</ul>
+										)}
+										{step.tags && step.tags.length > 0 && (
+											<div class="flex flex-wrap gap-2 pt-4">
+												{step.tags.map((tag) => (
+													<span class="rounded-full border border-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-slate-200">
+														{tag}
+													</span>
+												))}
+											</div>
+										)}
+									</div>
+									<div class="rounded-2xl border border-white/5 bg-black/30 p-3">
+										{step.image ? (
+											<img
+												src={step.image}
+												alt={`Illustration pour ${step.title}`}
+												class="w-full rounded-xl object-cover"
+												loading="lazy"
+											/>
+										) : (
+											<div class="flex h-48 items-center justify-center rounded-xl bg-black/20 text-xs text-slate-500">
+												Aperçu indisponible
+											</div>
+										)}
+									</div>
 								</div>
-								<div class="rounded-2xl border border-white/5 bg-black/30 p-3">
-									{step.image ? (
-										<img
-											src={step.image}
-											alt={`Illustration pour ${step.title}`}
-											class="w-full rounded-xl object-cover"
-											loading="lazy"
-										/>
-									) : (
-										<div class="flex h-48 items-center justify-center rounded-xl bg-black/20 text-xs text-slate-500">
-											Aperçu indisponible
-										</div>
-									)}
-								</div>
-							</div>
-						</article>
-					))}
+							</article>
+						))
+					}
 				</div>
 			</div>
 		</section>
 
 		<section class="border-b border-white/5 bg-[#050910] py-20">
 			<div class="mx-auto max-w-6xl space-y-12">
-				<div class="rounded-[2.75rem] border border-white/10 bg-gradient-to-br from-[#0c101a] via-[#080c15] to-[#151c27] p-10 shadow-[0_40px_90px_rgba(0,0,0,0.55)]">
+				<div
+					class="rounded-[2.75rem] border border-white/10 bg-gradient-to-br from-[#0c101a] via-[#080c15] to-[#151c27] p-10 shadow-[0_40px_90px_rgba(0,0,0,0.55)]"
+				>
 					<div class="flex flex-col gap-4 text-center lg:text-left">
-						<p class="text-sm uppercase tracking-[0.35em] text-[#ff7a00]">{project.result.title || "Résultat final"}</p>
-						<h2 class="text-3xl font-semibold">{project.result.title || "Résultat final"}</h2>
+						<p
+							class="text-sm uppercase tracking-[0.35em] text-[#ff7a00]"
+						>
+							{project.result.title || "Résultat final"}
+						</p>
+						<h2 class="text-3xl font-semibold">
+							{project.result.title || "Résultat final"}
+						</h2>
 						<p class="text-base text-slate-300">
-							Une expérience prête à être déployée, pensée pour livrer rapidement de la valeur tout en conservant performance et cohérence de marque.
+							Une expérience prête à être déployée, pensée pour
+							livrer rapidement de la valeur tout en conservant
+							performance et cohérence de marque.
 						</p>
 					</div>
 
-					{formattedResultPoints.length > 0 && (
-						<ul class="mt-8 grid gap-3 text-base text-slate-200 md:grid-cols-2">
-							{formattedResultPoints.map((point) => (
-								<li class="flex items-start gap-3 rounded-2xl border border-white/5 bg-white/5 px-4 py-3 backdrop-blur">
-									<span class="mt-1 h-2.5 w-2.5 flex-shrink-0 rounded-full bg-[#ff7a00]"></span>
-									<span>{point}</span>
-								</li>
-							))}
-						</ul>
-					)}
+					{
+						formattedResultPoints.length > 0 && (
+							<ul class="mt-8 grid gap-3 text-base text-slate-200 md:grid-cols-2">
+								{formattedResultPoints.map((point) => (
+									<li class="flex items-start gap-3 rounded-2xl border border-white/5 bg-white/5 px-4 py-3 backdrop-blur">
+										<span class="mt-1 h-2.5 w-2.5 flex-shrink-0 rounded-full bg-[#ff7a00]" />
+										<span>{point}</span>
+									</li>
+								))}
+							</ul>
+						)
+					}
 				</div>
 
 				<div class="grid gap-10 lg:grid-cols-2">
-					<div class="group relative overflow-hidden rounded-[2.25rem] border border-white/5 bg-gradient-to-br from-[#090f1a] to-[#141b29] p-6 shadow-[0_30px_80px_rgba(0,0,0,0.45)]">
-						<span class="inline-flex items-center rounded-full bg-[#ff7a00]/15 px-4 py-1 text-xs font-semibold uppercase tracking-[0.35em] text-[#ffb366]">
+					<div
+						class="group relative overflow-hidden rounded-[2.25rem] border border-white/5 bg-gradient-to-br from-[#090f1a] to-[#141b29] p-6 shadow-[0_30px_80px_rgba(0,0,0,0.45)]"
+					>
+						<span
+							class="inline-flex items-center rounded-full bg-[#ff7a00]/15 px-4 py-1 text-xs font-semibold uppercase tracking-[0.35em] text-[#ffb366]"
+						>
 							Desktop
 						</span>
-						<div class="mt-6 rounded-[1.75rem] border border-white/10 bg-black/30 p-4">
-							{project.result.desktopImage ? (
-								<img
-									src={project.result.desktopImage}
-									alt={`Version desktop du projet ${project.title}`}
-									class="w-full rounded-2xl object-cover transition duration-500 group-hover:scale-[1.015]"
-									loading="lazy"
-								/>
-							) : (
-								<div class="flex h-64 items-center justify-center rounded-2xl bg-black/20 text-sm text-slate-500">
-									Capture desktop indisponible
-								</div>
-							)}
+						<div
+							class="mt-6 rounded-[1.75rem] border border-white/10 bg-black/30 p-4"
+						>
+							{
+								project.result.desktopImage ? (
+									<img
+										src={project.result.desktopImage}
+										alt={`Version desktop du projet ${project.title}`}
+										class="w-full rounded-2xl object-cover transition duration-500 group-hover:scale-[1.015]"
+										loading="lazy"
+									/>
+								) : (
+									<div class="flex h-64 items-center justify-center rounded-2xl bg-black/20 text-sm text-slate-500">
+										Capture desktop indisponible
+									</div>
+								)
+							}
 						</div>
-						<div class="pointer-events-none absolute -bottom-10 -right-6 h-48 w-48 rounded-full bg-[#ff7a00]/10 blur-3xl"></div>
+						<div
+							class="pointer-events-none absolute -bottom-10 -right-6 h-48 w-48 rounded-full bg-[#ff7a00]/10 blur-3xl"
+						>
+						</div>
 					</div>
 
-					<div class="group relative overflow-hidden rounded-[2.25rem] border border-white/5 bg-gradient-to-br from-[#090f1a] to-[#141b29] p-6 shadow-[0_30px_80px_rgba(0,0,0,0.45)]">
-						<span class="inline-flex items-center rounded-full bg-[#ff7a00]/15 px-4 py-1 text-xs font-semibold uppercase tracking-[0.35em] text-[#ffb366]">
+					<div
+						class="group relative overflow-hidden rounded-[2.25rem] border border-white/5 bg-gradient-to-br from-[#090f1a] to-[#141b29] p-6 shadow-[0_30px_80px_rgba(0,0,0,0.45)]"
+					>
+						<span
+							class="inline-flex items-center rounded-full bg-[#ff7a00]/15 px-4 py-1 text-xs font-semibold uppercase tracking-[0.35em] text-[#ffb366]"
+						>
 							Mobile
 						</span>
-						<div class="mt-6 rounded-[1.75rem] border border-white/10 bg-black/30 p-4">
-							{project.result.mobileImage ? (
-								<img
-									src={project.result.mobileImage}
-									alt={`Version mobile du projet ${project.title}`}
-									class="w-full rounded-2xl object-cover transition duration-500 group-hover:scale-[1.015]"
-									loading="lazy"
-								/>
-							) : (
-								<div class="flex h-64 items-center justify-center rounded-2xl bg-black/20 text-sm text-slate-500">
-									Capture mobile indisponible
-								</div>
-							)}
+						<div
+							class="mt-6 rounded-[1.75rem] border border-white/10 bg-black/30 p-4"
+						>
+							{
+								project.result.mobileImage ? (
+									<img
+										src={project.result.mobileImage}
+										alt={`Version mobile du projet ${project.title}`}
+										class="w-full rounded-2xl object-cover transition duration-500 group-hover:scale-[1.015]"
+										loading="lazy"
+									/>
+								) : (
+									<div class="flex h-64 items-center justify-center rounded-2xl bg-black/20 text-sm text-slate-500">
+										Capture mobile indisponible
+									</div>
+								)
+							}
 						</div>
-						<div class="pointer-events-none absolute -top-12 -left-8 h-48 w-48 rounded-full bg-[#ff7a00]/10 blur-3xl"></div>
+						<div
+							class="pointer-events-none absolute -top-12 -left-8 h-48 w-48 rounded-full bg-[#ff7a00]/10 blur-3xl"
+						>
+						</div>
 					</div>
 				</div>
 			</div>
@@ -358,92 +526,149 @@ const formattedResultPoints = resultPoints.map((point) => point.text || point.ti
 		<section class="border-b border-white/5 bg-[#03060b] py-20">
 			<div class="mx-auto max-w-6xl space-y-10">
 				<div class="text-center">
-					<p class="text-sm uppercase tracking-[0.3em] text-[#ff7a00]">{project.stack.title || "Stack technologique"}</p>
-					<h2 class="mt-2 text-3xl font-semibold">{project.stack.title || "Stack technologique"}</h2>
+					<p
+						class="text-sm uppercase tracking-[0.3em] text-[#ff7a00]"
+					>
+						{project.stack.title || "Stack technologique"}
+					</p>
+					<h2 class="mt-2 text-3xl font-semibold">
+						{project.stack.title || "Stack technologique"}
+					</h2>
 				</div>
 
-				{stackItems.length > 0 && (
-					<div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-						{stackItems.map((item) => (
-							<div class="rounded-2xl border border-white/5 bg-white/5 px-5 py-4">
-								<p class="text-lg font-semibold">{item.label}</p>
-								<p class="text-xs uppercase tracking-[0.3em] text-slate-400">{item.category}</p>
-							</div>
-						))}
-					</div>
-				)}
+				{
+					stackItems.length > 0 && (
+						<div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+							{stackItems.map((item) => (
+								<div class="rounded-2xl border border-white/5 bg-white/5 px-5 py-4">
+									<p class="text-lg font-semibold">
+										{item.label}
+									</p>
+									<p class="text-xs uppercase tracking-[0.3em] text-slate-400">
+										{item.category}
+									</p>
+								</div>
+							))}
+						</div>
+					)
+				}
 
-				{stackFeatures.length > 0 && (
-					<div class="flex flex-wrap gap-3">
-						{stackFeatures.map((feature) => (
-							<span class="rounded-full border border-white/10 px-4 py-1 text-xs font-semibold uppercase tracking-wide text-slate-200">
-								{feature}
-							</span>
-						))}
-					</div>
-				)}
+				{
+					stackFeatures.length > 0 && (
+						<div class="flex flex-wrap gap-3">
+							{stackFeatures.map((feature) => (
+								<span class="rounded-full border border-white/10 px-4 py-1 text-xs font-semibold uppercase tracking-wide text-slate-200">
+									{feature}
+								</span>
+							))}
+						</div>
+					)
+				}
 			</div>
 		</section>
 
 		<section class="border-b border-white/5 bg-[#04070d] py-20">
 			<div class="mx-auto max-w-6xl space-y-10">
 				<div class="text-center">
-					<p class="text-sm uppercase tracking-[0.3em] text-[#ff7a00]">{project.impact.title || "Impact & Bilan"}</p>
-					<h2 class="mt-2 text-3xl font-semibold">{project.impact.title || "Impact & Bilan"}</h2>
+					<p
+						class="text-sm uppercase tracking-[0.3em] text-[#ff7a00]"
+					>
+						{project.impact.title || "Impact & Bilan"}
+					</p>
+					<h2 class="mt-2 text-3xl font-semibold">
+						{project.impact.title || "Impact & Bilan"}
+					</h2>
 				</div>
 
 				<div class="grid gap-8 lg:grid-cols-2">
 					<div class="space-y-4">
-						<p class="text-xs uppercase tracking-[0.3em] text-[#ff7a00]">
-							{project.impact.learnedTitle || "Ce que j'ai appris"}
+						<p
+							class="text-xs uppercase tracking-[0.3em] text-[#ff7a00]"
+						>
+							{
+								project.impact.learnedTitle ||
+									"Ce que j'ai appris"
+							}
 						</p>
-						{learnedPoints.map((point) => (
-							<div class="rounded-2xl border border-white/10 bg-white/5 p-5">
-								<h3 class="text-lg font-semibold text-white">{point.title}</h3>
-								<p class="mt-2 text-sm text-slate-300">{point.text}</p>
-							</div>
-						))}
+						{
+							learnedPoints.map((point) => (
+								<div class="rounded-2xl border border-white/10 bg-white/5 p-5">
+									<h3 class="text-lg font-semibold text-white">
+										{point.title}
+									</h3>
+									<p class="mt-2 text-sm text-slate-300">
+										{point.text}
+									</p>
+								</div>
+							))
+						}
 					</div>
 					<div class="space-y-4">
-						<p class="text-xs uppercase tracking-[0.3em] text-[#ff7a00]">
-							{project.impact.doDifferentTitle || "Ce que je referais autrement"}
+						<p
+							class="text-xs uppercase tracking-[0.3em] text-[#ff7a00]"
+						>
+							{
+								project.impact.doDifferentTitle ||
+									"Ce que je referais autrement"
+							}
 						</p>
-						{doDifferentPoints.map((point) => (
-							<div class="rounded-2xl border border-white/10 bg-white/5 p-5">
-								<h3 class="text-lg font-semibold text-white">{point.title}</h3>
-								<p class="mt-2 text-sm text-slate-300">{point.text}</p>
-							</div>
-						))}
+						{
+							doDifferentPoints.map((point) => (
+								<div class="rounded-2xl border border-white/10 bg-white/5 p-5">
+									<h3 class="text-lg font-semibold text-white">
+										{point.title}
+									</h3>
+									<p class="mt-2 text-sm text-slate-300">
+										{point.text}
+									</p>
+								</div>
+							))
+						}
 					</div>
 				</div>
 
-				{project.impact.quote && (
-					<figure class="rounded-[2rem] border border-white/5 bg-gradient-to-r from-white/5 to-transparent p-8 text-center text-slate-200">
-						<blockquote class="text-lg italic">“{project.impact.quote}”</blockquote>
-					</figure>
-				)}
+				{
+					project.impact.quote && (
+						<figure class="rounded-[2rem] border border-white/5 bg-gradient-to-r from-white/5 to-transparent p-8 text-center text-slate-200">
+							<blockquote class="text-lg italic">
+								“{project.impact.quote}”
+							</blockquote>
+						</figure>
+					)
+				}
 			</div>
 		</section>
 
-		{summaryStats.length > 0 && (
-			<section class="bg-[#03060b] py-16">
-				<div class="mx-auto flex max-w-5xl flex-wrap items-center justify-center gap-8 text-center text-white">
-					{summaryStats.map((stat) => (
-						<div>
-							<p class="text-4xl font-semibold text-[#ff7a00]">{stat.value}</p>
-							<p class="mt-2 text-sm text-slate-400">{stat.label}</p>
-						</div>
-					))}
-				</div>
-				<p class="mt-8 text-center text-sm text-slate-500">// Chaque projet est une nouvelle opportunité d'innover.</p>
-			</section>
-		)}
+		{
+			summaryStats.length > 0 && (
+				<section class="bg-[#03060b] py-16">
+					<div class="mx-auto flex max-w-5xl flex-wrap items-center justify-center gap-8 text-center text-white">
+						{summaryStats.map((stat) => (
+							<div>
+								<p class="text-4xl font-semibold text-[#ff7a00]">
+									{stat.value}
+								</p>
+								<p class="mt-2 text-sm text-slate-400">
+									{stat.label}
+								</p>
+							</div>
+						))}
+					</div>
+					<p class="mt-8 text-center text-sm text-slate-500">
+						// Chaque projet est une nouvelle opportunité d'innover.
+					</p>
+				</section>
+			)
+		}
 
 		<section class="border-t border-white/5 bg-[#030508] py-20">
 			<div class="mx-auto max-w-5xl text-center">
-				<h3 class="text-3xl font-semibold text-white">Envie de construire votre prochain projet ?</h3>
+				<h3 class="text-3xl font-semibold text-white">
+					Envie de construire votre prochain projet ?
+				</h3>
 				<p class="mt-4 text-base text-slate-300">
-					Discutons de vos besoins, explorons vos idées et donnons vie à une expérience incomparable.
+					Discutons de vos besoins, explorons vos idées et donnons vie
+					à une expérience incomparable.
 				</p>
 			</div>
 			<div class="mt-12">
@@ -452,9 +677,8 @@ const formattedResultPoints = resultPoints.map((point) => point.text || point.ti
 		</section>
 
 		<section class="bg-[#030508] pb-16">
-			<div class="mx-auto max-w-4xl">
-				<Chat />
-			</div>
+			<div class="mx-auto max-w-4xl"></div>
 		</section>
 	</main>
+	<Chat />
 </Layout>
