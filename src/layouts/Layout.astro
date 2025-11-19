@@ -21,10 +21,37 @@ import animationsUrl from "/scripts/animations.js?url";
 			defer></script>
 	</head>
 	<body>
+		<div id="preloader" class="preloader" aria-live="polite" aria-busy="true">
+			<div class="preloader__glow"></div>
+			<div class="preloader__content">
+				<div class="preloader__spinner">
+					<span></span>
+					<span></span>
+				</div>
+				<p class="preloader__title">Portfolio de Noah Rognon</p>
+				<p class="preloader__tagline">
+					Developpeur passionne qui transforme vos idees en experiences elegantes.
+				</p>
+			</div>
+		</div>
 		<Header />
 		<slot />
 		<Footer />
 		<script src={animationsUrl} defer></script>
+		<script is:inline>
+			const hidePreloader = () => {
+				const preloader = document.getElementById("preloader");
+				if (!preloader) return;
+				preloader.classList.add("preloader--done");
+				window.setTimeout(() => preloader.remove(), 600);
+			};
+
+			if (document.readyState === "complete") {
+				hidePreloader();
+			} else {
+				window.addEventListener("load", hidePreloader, { once: true });
+			}
+		</script>
 	</body>
 </html>
 
@@ -34,5 +61,109 @@ import animationsUrl from "/scripts/animations.js?url";
 		margin: 0;
 		width: 100%;
 		height: 100%;
+	}
+
+	.preloader {
+		position: fixed;
+		inset: 0;
+		background: radial-gradient(circle at top, rgba(255, 122, 0, 0.2), #06080d 65%);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		z-index: 9999;
+		overflow: hidden;
+		color: #fff;
+		transition: opacity 0.4s ease, transform 0.4s ease;
+	}
+
+	.preloader--done {
+		opacity: 0;
+		transform: scale(1.02);
+		pointer-events: none;
+	}
+
+	.preloader__glow {
+		position: absolute;
+		width: 480px;
+		height: 480px;
+		background: radial-gradient(circle, rgba(255, 122, 0, 0.35), transparent 65%);
+		filter: blur(20px);
+		animation: preloaderPulse 3s ease-in-out infinite;
+	}
+
+	.preloader__content {
+		position: relative;
+		padding: 3rem;
+		border-radius: 2rem;
+		background: rgba(10, 12, 18, 0.85);
+		box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
+		text-align: center;
+		border: 1px solid rgba(255, 122, 0, 0.25);
+		max-width: min(90vw, 32rem);
+	}
+
+	.preloader__spinner {
+		display: inline-flex;
+		position: relative;
+		width: 5rem;
+		height: 5rem;
+		justify-content: center;
+		align-items: center;
+		margin: 0 auto 1.5rem;
+	}
+
+	.preloader__spinner span {
+		position: absolute;
+		inset: 0;
+		border-radius: 999px;
+		border: 2px solid transparent;
+		border-top-color: #ff7a00;
+		border-bottom-color: rgba(255, 255, 255, 0.15);
+		animation: preloaderSpin 1.4s linear infinite;
+	}
+
+	.preloader__spinner span:last-child {
+		inset: 0.6rem;
+		border-top-color: rgba(255, 255, 255, 0.9);
+		border-bottom-color: rgba(255, 122, 0, 0.2);
+		animation-duration: 1s;
+	}
+
+	.preloader__title {
+		font-size: clamp(1.3rem, 4vw, 1.8rem);
+		font-weight: 600;
+		letter-spacing: 0.08em;
+		color: #ffb26b;
+		text-transform: uppercase;
+		margin-bottom: 0.75rem;
+	}
+
+	.preloader__tagline {
+		font-size: 0.95rem;
+		color: rgba(226, 232, 240, 0.85);
+		line-height: 1.5;
+		max-width: 26rem;
+		margin: 0 auto;
+	}
+
+	@keyframes preloaderSpin {
+		from {
+			transform: rotate(0deg);
+		}
+		to {
+			transform: rotate(360deg);
+		}
+	}
+
+	@keyframes preloaderPulse {
+		0%,
+		100% {
+			transform: scale(0.9);
+			opacity: 0.5;
+		}
+		50% {
+			transform: scale(1.05);
+			opacity: 0.9;
+		}
 	}
 </style>
