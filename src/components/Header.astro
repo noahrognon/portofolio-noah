@@ -45,7 +45,15 @@ const isActive = (href: string) => {
 			/>
 		</button>
 
-		<nav id="primary-navigation" class="hidden flex-1 md:block">
+		<a
+			href="/"
+			class="site-header__brand"
+			aria-label="Retour a l'accueil du portfolio de Noah Rognon"
+		>
+			Noah ROGNON
+		</a>
+
+		<nav id="primary-navigation" class="hidden flex-1 justify-center md:flex">
 			<ul class="flex justify-center overflow-hidden rounded-md bg-[#11171d]">
 				{links.map((link, index) => {
 					const active = isActive(link.href);
@@ -192,6 +200,20 @@ const isActive = (href: string) => {
 		background-color: #11171d;
 	}
 
+	.site-header__brand {
+		text-decoration: none;
+		font-size: 1rem;
+		font-weight: 700;
+		letter-spacing: 0.18em;
+		text-transform: uppercase;
+		color: #ffb26b;
+		transition: color 0.2s ease;
+	}
+
+	.site-header__brand:hover {
+		color: #ffcf99;
+	}
+
 	.mobile-menu[data-open="true"] {
 		pointer-events: auto;
 		opacity: 1;
@@ -238,6 +260,10 @@ const isActive = (href: string) => {
 		background-color: #e2e8f0;
 	}
 
+	:root[data-theme="light"] .site-header__brand {
+		color: #ea580c;
+	}
+
 	:root[data-theme="light"] .mobile-menu {
 		border-color: #d0d9e3;
 		background-color: #ffffff;
@@ -250,6 +276,13 @@ const isActive = (href: string) => {
 
 	:root[data-theme="light"] .mobile-menu nav a[data-active="false"]:hover {
 		color: #0f172a;
+	}
+
+	@media (max-width: 767px) {
+		.site-header__brand {
+			margin-left: auto;
+			margin-right: 0.5rem;
+		}
 	}
 </style>
 
